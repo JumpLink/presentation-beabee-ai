@@ -15,7 +15,15 @@ const deck = new Reveal({
   // Ensure content can be scrolled
   touch: true,
   // Prevent content from being cut off
-  margin: 0.1,
+  margin: 0,
+  // Full width and height
+  width: '100%',
+  height: '100%',
+  // Disable automatic scaling
+  minScale: 1,
+  maxScale: 1,
+  // Disable automatic layout
+  disableLayout: true,
   // Ensure scrollable elements work properly
   containerAttributes: {
     'data-prevent-swipe': ''
@@ -24,14 +32,18 @@ const deck = new Reveal({
 
 // Add event listener to handle scrolling within slides
 document.addEventListener('wheel', function(event) {
-  // Find if we're inside a scrollable element
+  // Find if we're inside a slide section
   let target = event.target;
+  let insideSlide = false;
+  
   while (target && target !== document) {
-    if (target.classList.contains('scrollable-content')) {
-      // If the scrollable element is at the top and scrolling up, or
+    if (target.tagName === 'SECTION' && target.parentNode && target.parentNode.classList.contains('slides')) {
+      insideSlide = true;
+      
+      // If the slide is at the top and scrolling up, or
       // at the bottom and scrolling down, let Reveal handle it
       const isAtTop = target.scrollTop === 0;
-      const isAtBottom = target.scrollHeight - target.scrollTop === target.clientHeight;
+      const isAtBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 5; // Adding small buffer
       
       if ((isAtTop && event.deltaY < 0) || (isAtBottom && event.deltaY > 0)) {
         // Let Reveal handle the event
