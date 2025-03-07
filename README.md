@@ -28,6 +28,5 @@ npm run preview
 
 ## Project Structure
 
-- `src/index.html` - Main HTML file containing the presentation slides
+- `index.html` - Main HTML file containing the presentation slides
 - `src/main.js` - JavaScript entry point that initializes Reveal.js
-- `vite.config.js` - Vite configuration file 
