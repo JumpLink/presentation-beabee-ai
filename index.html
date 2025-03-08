@@ -105,10 +105,15 @@
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             margin-top: 10px;
+            display: flex;
+            flex-direction: column;
         }
         
         .chat-messages {
             padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 320px);
         }
         
         .message {
@@ -165,6 +170,89 @@
         
         .prompt-function:hover {
             text-decoration: underline;
+        }
+        
+        /* Chat input styling */
+        .chat-input-container {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background-color: rgba(50, 50, 50, 0.3);
+        }
+        
+        .chat-toolbar {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        
+        .toolbar-button {
+            background-color: rgba(86, 182, 194, 0.2);
+            color: #56b6c2;
+            border: 1px solid rgba(86, 182, 194, 0.3);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-button:hover {
+            background-color: rgba(86, 182, 194, 0.3);
+        }
+        
+        .toolbar-button i {
+            margin-right: 4px;
+        }
+        
+        .chat-input-wrapper {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background-color: rgba(100, 100, 100, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 12px 18px;
+            color: #fff;
+            font-size: 1em;
+            outline: none;
+            min-height: 60px;
+            max-height: 120px;
+            resize: none;
+            font-family: inherit;
+            line-height: 1.4;
+        }
+        
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .send-button {
+            background-color: #56b6c2;
+            color: #1e2129;
+            border: none;
+            border-radius: 50%;
+            width: 62px;
+            height: 62px;
+            margin-left: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            align-self: center;
+        }
+        
+        .send-button svg {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .send-button:hover {
+            background-color: #67c7d3;
         }
         
         /* Dropdown styling */
@@ -320,7 +408,7 @@
                                         <div class="dropdown-item">Klimawandel und persönliche Verantwortung</div>
                                         <div class="dropdown-item">Digitalisierung im Gesundheitswesen</div>
                                     </div>
-                                </span> in <span class="prompt-function" onclick="toggleDropdown(event, 'question-dropdown')">@Frage: 1
+                                </span> am häufigsten genannt? Schaue dir dazu alle Antworten zu <span class="prompt-function" onclick="toggleDropdown(event, 'question-dropdown')">@Frage: 1
                                     <div class="dropdown-content" id="question-dropdown">
                                         <div class="dropdown-header">Verfügbare Fragen:</div>
                                         <div class="dropdown-item active">1: Welche Veränderungen in der politischen Debatte hast du wahrgenommen?</div>
@@ -328,7 +416,7 @@
                                         <div class="dropdown-item">3: Wie sollten Medien mit rechten populistischen Aussagen umgehen?</div>
                                         <div class="dropdown-item">4: Wie hat sich dein Umgang mit politischen Diskussionen verändert?</div>
                                     </div>
-                                </span> am häufigsten genannt? Kannst du sie in positive, negative und neutrale Wahrnehmungen einteilen?
+                                </span> an. Kannst du sie in positive, negative und neutrale Wahrnehmungen einteilen?
                             </div>
                             <div class="message-time">10:42</div>
                         </div>
@@ -368,6 +456,25 @@
                                 <p class="conclusion">Die Analyse zeigt, dass die Veränderungen überwiegend negativ wahrgenommen werden, insbesondere die Normalisierung rechter Rhetorik und die aggressivere Diskussionskultur.</p>
                             </div>
                             <div class="message-time">10:43</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <div class="chat-toolbar">
+                            <button class="toolbar-button" onclick="insertPromptFunction('callout')">
+                                <i>@</i>Callout
+                            </button>
+                            <button class="toolbar-button" onclick="insertPromptFunction('frage')">
+                                <i>@</i>Frage
+                            </button>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input"></textarea>
+                            <button class="send-button" onclick="sendMessage()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -412,6 +519,50 @@
                     e.stopPropagation();
                 });
             });
+        });
+        
+        // Insert prompt function text into input field
+        function insertPromptFunction(type) {
+            const input = document.getElementById('chat-input');
+            let text = '';
+            
+            if (type === 'callout') {
+                text = '@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland? ';
+            } else if (type === 'frage') {
+                text = '@Frage: 1 ';
+            }
+            
+            // Insert at cursor position or append
+            if (typeof input.selectionStart !== 'undefined') {
+                const startPos = input.selectionStart;
+                const endPos = input.selectionEnd;
+                input.value = input.value.substring(0, startPos) + text + input.value.substring(endPos);
+                input.selectionStart = input.selectionEnd = startPos + text.length;
+            } else {
+                input.value += text;
+            }
+            
+            // Focus the input
+            input.focus();
+        }
+        
+        // Send message (demo only)
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            if (input.value.trim() !== '') {
+                // In a real app, this would send the message
+                // For demo purposes, just clear the input
+                input.value = '';
+                input.focus();
+            }
+        }
+        
+        // Allow Enter key to send message
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
     </script>
 </body>
