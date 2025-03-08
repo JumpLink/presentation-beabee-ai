@@ -419,6 +419,19 @@
             font-size: var(--font-size-lg);
             text-align: left;
         }
+        
+        /* Image styling */
+        .image-container {
+            margin: var(--spacing-md) 0;
+            text-align: center;
+        }
+        
+        .generated-image {
+            max-width: 100%;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-container);
+            border: 1px solid var(--color-border-light);
+        }
     </style>
 </head>
 <body>
@@ -620,114 +633,68 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Fourth slide: Image generation example -->
+            <section>
+                <h4>KI-Bildgenerierung Beispiel</h4>
+                <div class="chat-container">
+                    <!-- Chat messages area -->
+                    <div class="chat-messages">
+                        <!-- User message -->
+                        <div class="message user-message">
+                            <div class="message-content">
+                                Bitte erstelle ein passendes Teaser-Bild für <span class="prompt-function" onclick="toggleDropdown(event, 'callout-dropdown-3')">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?
+                                    <div class="dropdown-content" id="callout-dropdown-3">
+                                        <div class="dropdown-header">Verfügbare Callouts:</div>
+                                        <div class="dropdown-item active">Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?</div>
+                                        <div class="dropdown-item">Klimawandel und persönliche Verantwortung</div>
+                                        <div class="dropdown-item">Digitalisierung im Gesundheitswesen</div>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="message-time">11:30</div>
+                        </div>
+                        
+                        <!-- AI response message -->
+                        <div class="message ai-message">
+                            <div class="message-content">
+                                <h5>Generated Teaser Image</h5>
+                                
+                                <p>Here's a teaser image for the callout about right-wing populism's influence on political debate in Germany:</p>
+                                
+                                <div class="image-container">
+                                    <!-- Placeholder image - replace with actual generated image -->
+                                    <img src="https://placehold.co/600x400/1e2129/56b6c2?text=Teaser+Image:+Right-Wing+Populism+in+German+Political+Debate" alt="Teaser image for callout about right-wing populism" class="generated-image">
+                                </div>
+                                
+                                <p class="conclusion">This image visually represents the theme of the callout, highlighting the impact of right-wing populism on political discourse in Germany.</p>
+                            </div>
+                            <div class="message-time">11:31</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat input area -->
+                    <div class="chat-input-container">
+                        <div class="chat-toolbar">
+                            <button class="toolbar-button" onclick="insertPromptFunction('callout', 'chat-input-3')">
+                                <i>@</i>Callout
+                            </button>
+                            <button class="toolbar-button" onclick="insertPromptFunction('frage', 'chat-input-3')">
+                                <i>@</i>Frage
+                            </button>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-3"></textarea>
+                            <button class="send-button" onclick="sendMessage('chat-input-3')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
-    
-    <script>
-        // Constants
-        const DROPDOWN_SELECTOR = '.dropdown-content';
-        const PROMPT_FUNCTION_SELECTOR = '.prompt-function';
-        const DROPDOWN_ITEM_SELECTOR = '.dropdown-item';
-        const CHAT_INPUT_ID = 'chat-input';
-        
-        // Dropdown functionality
-        function toggleDropdown(event, id) {
-            // Prevent default behavior and stop propagation
-            event.preventDefault();
-            event.stopPropagation();
-            
-            const dropdown = document.getElementById(id);
-            
-            // Close all other dropdowns first
-            document.querySelectorAll(DROPDOWN_SELECTOR).forEach(el => {
-                if (el.id !== id) {
-                    el.classList.remove('show');
-                }
-            });
-            
-            // Toggle the clicked dropdown
-            dropdown.classList.toggle('show');
-        }
-        
-        // Close dropdowns when clicking elsewhere
-        function closeDropdownsOnOutsideClick(event) {
-            if (!event.target.matches(PROMPT_FUNCTION_SELECTOR) && !event.target.matches(DROPDOWN_ITEM_SELECTOR)) {
-                document.querySelectorAll(DROPDOWN_SELECTOR).forEach(el => {
-                    el.classList.remove('show');
-                });
-            }
-        }
-        
-        // Prevent dropdown items from navigating
-        function preventDropdownNavigation() {
-            document.querySelectorAll(DROPDOWN_ITEM_SELECTOR).forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            });
-        }
-        
-        // Insert prompt function text into input field
-        function insertPromptFunction(type) {
-            const input = document.getElementById(CHAT_INPUT_ID);
-            let text = '';
-            
-            if (type === 'callout') {
-                text = '@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland? ';
-            } else if (type === 'frage') {
-                text = '@Frage: 1 ';
-            }
-            
-            insertTextAtCursor(input, text);
-        }
-        
-        // Helper function to insert text at cursor position
-        function insertTextAtCursor(input, text) {
-            // Insert at cursor position or append
-            if (typeof input.selectionStart !== 'undefined') {
-                const startPos = input.selectionStart;
-                const endPos = input.selectionEnd;
-                input.value = input.value.substring(0, startPos) + text + input.value.substring(endPos);
-                input.selectionStart = input.selectionEnd = startPos + text.length;
-            } else {
-                input.value += text;
-            }
-            
-            // Focus the input
-            input.focus();
-        }
-        
-        // Send message (demo only)
-        function sendMessage() {
-            const input = document.getElementById(CHAT_INPUT_ID);
-            if (input.value.trim() !== '') {
-                // In a real app, this would send the message
-                // For demo purposes, just clear the input
-                input.value = '';
-                input.focus();
-            }
-        }
-        
-        // Initialize event listeners
-        function initEventListeners() {
-            // Close dropdowns when clicking elsewhere
-            document.addEventListener('click', closeDropdownsOnOutsideClick);
-            
-            // Allow Enter key to send message
-            document.getElementById(CHAT_INPUT_ID).addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-            
-            // Initialize on DOM content loaded
-            document.addEventListener('DOMContentLoaded', preventDropdownNavigation);
-        }
-        
-        // Initialize the application
-        initEventListeners();
-    </script>
 </body>
 </html> 
