@@ -8,6 +8,65 @@
     <title>Beabee, AI Callout integration</title>
     <script type="module" src="./src/main.js"></script>
     <style>
+        /* CSS Variables */
+        :root {
+            /* Colors */
+            --color-primary: #56b6c2;
+            --color-primary-hover: #67c7d3;
+            --color-primary-light: rgba(86, 182, 194, 0.2);
+            --color-primary-light-hover: rgba(86, 182, 194, 0.3);
+            --color-text: #fff;
+            --color-text-muted: rgba(255, 255, 255, 0.6);
+            --color-text-placeholder: rgba(255, 255, 255, 0.5);
+            --color-answer-type: #98c379;
+            --color-background-dark: #1e2129;
+            --color-background-light: rgba(240, 240, 240, 0.05);
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-border-light: rgba(255, 255, 255, 0.2);
+            
+            /* Message colors */
+            --color-user-message: rgba(100, 100, 100, 0.3);
+            --color-ai-message: rgba(50, 50, 50, 0.3);
+            --color-chat-input-bg: rgba(100, 100, 100, 0.3);
+            
+            /* Category colors */
+            --color-negative-bg: rgba(255, 100, 100, 0.1);
+            --color-negative-border: rgba(255, 100, 100, 0.5);
+            --color-neutral-bg: rgba(200, 200, 200, 0.1);
+            --color-neutral-border: rgba(200, 200, 200, 0.5);
+            --color-positive-bg: rgba(100, 255, 100, 0.1);
+            --color-positive-border: rgba(100, 255, 100, 0.5);
+            
+            /* Spacing */
+            --spacing-xs: 5px;
+            --spacing-sm: 8px;
+            --spacing-md: 10px;
+            --spacing-lg: 15px;
+            --spacing-xl: 20px;
+            
+            /* Font sizes */
+            --font-size-xs: 0.7em;
+            --font-size-sm: 0.8em;
+            --font-size-base: 0.85em;
+            --font-size-md: 0.9em;
+            --font-size-lg: 1em;
+            
+            /* Border radius */
+            --border-radius-xs: 5px;
+            --border-radius-sm: 4px;
+            --border-radius-md: 6px;
+            --border-radius-lg: 10px;
+            --border-radius-xl: 15px;
+            --border-radius-circle: 50%;
+            
+            /* Shadows */
+            --shadow-dropdown: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            --shadow-container: 0 4px 15px rgba(0, 0, 0, 0.2);
+            
+            /* Transitions */
+            --transition-default: all 0.2s;
+        }
+
         /* Override Reveal.js default styles */
         .reveal {
             height: 100%;
@@ -18,7 +77,7 @@
         }
         
         .reveal .slides section {
-            padding: 20px;
+            padding: var(--spacing-xl);
             height: 100%;
             overflow-y: auto;
             top: 0 !important;
@@ -34,7 +93,7 @@
         .reveal .slides h5, 
         .reveal .slides h6 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-xl);
         }
         
         /* Fix for Reveal.js pointer-events */
@@ -45,19 +104,19 @@
             pointer-events: auto !important;
         }
         
-        /* Scrollbar styling for slides */
+        /* Scrollbar styling */
         .reveal .slides section::-webkit-scrollbar {
-            width: 8px;
+            width: var(--spacing-sm);
         }
         
         .reveal .slides section::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
+            border-radius: var(--border-radius-sm);
         }
         
         .reveal .slides section::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+            border-radius: var(--border-radius-sm);
         }
         
         .reveal .slides section::-webkit-scrollbar-thumb:hover {
@@ -66,25 +125,25 @@
         
         /* Text styling */
         .description {
-            margin: 0 0 15px 0;
+            margin: 0 0 var(--spacing-lg) 0;
         }
         
         .questions-title {
-            margin: 15px 0 10px 0;
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
         }
         
         .questions-list {
-            margin: 5px 0 0 15px;
-            padding-left: 10px;
+            margin: var(--spacing-xs) 0 0 var(--spacing-lg);
+            padding-left: var(--spacing-md);
         }
         
         .questions-list li {
-            margin-bottom: 10px;
+            margin-bottom: var(--spacing-md);
         }
         
         .questions-list ul {
-            margin: 5px 0 5px 0;
-            padding-left: 20px;
+            margin: var(--spacing-xs) 0 var(--spacing-xs) 0;
+            padding-left: var(--spacing-xl);
         }
         
         .questions-list ul li {
@@ -93,31 +152,39 @@
         }
         
         .answer-type {
-            color: #98c379;
-            font-size: 0.9em;
-            margin-left: 5px;
+            color: var(--color-answer-type);
+            font-size: var(--font-size-md);
+            margin-left: var(--spacing-xs);
+        }
+        
+        /* Common component styles */
+        .dropdown-item,
+        .message-content,
+        .toolbar-button,
+        .chat-input {
+            transition: var(--transition-default);
         }
         
         /* Chat styling */
         .chat-container {
-            background-color: rgba(240, 240, 240, 0.05);
-            border-radius: 10px;
+            background-color: var(--color-background-light);
+            border-radius: var(--border-radius-lg);
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            margin-top: 10px;
+            box-shadow: var(--shadow-container);
+            margin-top: var(--spacing-md);
             display: flex;
             flex-direction: column;
         }
         
         .chat-messages {
-            padding: 15px;
+            padding: var(--spacing-lg);
             flex: 1;
             overflow-y: auto;
             max-height: calc(100vh - 320px);
         }
         
         .message {
-            margin-bottom: 15px;
+            margin-bottom: var(--spacing-lg);
             display: flex;
             flex-direction: column;
             max-width: 85%;
@@ -136,32 +203,31 @@
         }
         
         .message-content {
-            padding: 10px 15px;
-            border-radius: 15px;
-            font-size: 0.9em;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-xl);
+            font-size: var(--font-size-md);
             line-height: 1.4;
+            color: var(--color-text);
         }
         
         .user-message .message-content {
-            background-color: rgba(100, 100, 100, 0.3);
-            color: #fff;
-            border-top-right-radius: 5px;
+            background-color: var(--color-user-message);
+            border-top-right-radius: var(--spacing-xs);
         }
         
         .ai-message .message-content {
-            background-color: rgba(50, 50, 50, 0.3);
-            color: #fff;
-            border-top-left-radius: 5px;
+            background-color: var(--color-ai-message);
+            border-top-left-radius: var(--spacing-xs);
         }
         
         .message-time {
-            font-size: 0.7em;
-            margin-top: 5px;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: var(--font-size-xs);
+            margin-top: var(--spacing-xs);
+            color: var(--color-text-muted);
         }
         
         .prompt-function {
-            color: #56b6c2;
+            color: var(--color-primary);
             font-weight: bold;
             cursor: pointer;
             position: relative;
@@ -176,8 +242,8 @@
         .chat-input-container {
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            background-color: rgba(50, 50, 50, 0.3);
+            padding: var(--spacing-lg);
+            background-color: var(--color-user-message);
         }
         
         .chat-toolbar {
@@ -186,23 +252,22 @@
         }
         
         .toolbar-button {
-            background-color: rgba(86, 182, 194, 0.2);
-            color: #56b6c2;
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
             border: 1px solid rgba(86, 182, 194, 0.3);
-            border-radius: 6px;
+            border-radius: var(--border-radius-md);
             padding: 6px 12px;
-            font-size: 0.9em;
-            margin-right: 10px;
+            font-size: var(--font-size-md);
+            margin-right: var(--spacing-md);
             cursor: pointer;
-            transition: all 0.2s;
         }
         
         .toolbar-button:hover {
-            background-color: rgba(86, 182, 194, 0.3);
+            background-color: var(--color-primary-light-hover);
         }
         
         .toolbar-button i {
-            margin-right: 4px;
+            margin-right: var(--spacing-xs);
         }
         
         .chat-input-wrapper {
@@ -212,12 +277,12 @@
         
         .chat-input {
             flex: 1;
-            background-color: rgba(100, 100, 100, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
+            background-color: var(--color-chat-input-bg);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-xl);
             padding: 12px 18px;
-            color: #fff;
-            font-size: 1em;
+            color: var(--color-text);
+            font-size: var(--font-size-lg);
             outline: none;
             min-height: 60px;
             max-height: 120px;
@@ -227,14 +292,14 @@
         }
         
         .chat-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: var(--color-text-placeholder);
         }
         
         .send-button {
-            background-color: #56b6c2;
-            color: #1e2129;
+            background-color: var(--color-primary);
+            color: var(--color-background-dark);
             border: none;
-            border-radius: 50%;
+            border-radius: var(--border-radius-circle);
             width: 62px;
             height: 62px;
             margin-left: 12px;
@@ -242,7 +307,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: var(--transition-default);
             align-self: center;
         }
         
@@ -252,20 +317,20 @@
         }
         
         .send-button:hover {
-            background-color: #67c7d3;
+            background-color: var(--color-primary-hover);
         }
         
         /* Dropdown styling */
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: #1e2129;
+            background-color: var(--color-background-dark);
             min-width: 250px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
-            border-radius: 6px;
-            padding: 8px 0;
+            box-shadow: var(--shadow-dropdown);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-sm) 0;
             z-index: 1000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--color-border);
             left: 0;
             top: 100%;
         }
@@ -275,83 +340,83 @@
         }
         
         .dropdown-item {
-            color: #fff;
-            padding: 8px 12px;
+            color: var(--color-text);
+            padding: var(--spacing-sm) 12px;
             text-decoration: none;
             display: block;
-            font-size: 0.85em;
-            transition: background-color 0.2s;
+            font-size: var(--font-size-base);
             cursor: pointer;
         }
         
         .dropdown-item:hover {
-            background-color: rgba(86, 182, 194, 0.2);
+            background-color: var(--color-primary-light);
         }
         
         .dropdown-item.active {
-            background-color: rgba(86, 182, 194, 0.3);
+            background-color: var(--color-primary-light-hover);
             font-weight: bold;
         }
         
         .dropdown-header {
-            padding: 8px 12px;
-            color: #56b6c2;
+            padding: var(--spacing-sm) 12px;
+            color: var(--color-primary);
             font-weight: bold;
-            font-size: 0.8em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 5px;
+            font-size: var(--font-size-sm);
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: var(--spacing-xs);
         }
         
+        /* Analysis styling */
         .analysis-summary {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
         }
         
         .category {
             flex: 1;
             min-width: 200px;
-            padding: 8px;
-            border-radius: 5px;
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-xs);
         }
         
         .category h6 {
-            margin: 0 0 5px 0;
-            font-size: 0.9em;
+            margin: 0 0 var(--spacing-xs) 0;
+            font-size: var(--font-size-md);
             text-align: left;
         }
         
         .category ul {
             margin: 0;
-            padding-left: 15px;
-            font-size: 0.85em;
+            padding-left: var(--spacing-lg);
+            font-size: var(--font-size-base);
         }
         
         .negative {
-            background-color: rgba(255, 100, 100, 0.1);
-            border-left: 3px solid rgba(255, 100, 100, 0.5);
+            background-color: var(--color-negative-bg);
+            border-left: 3px solid var(--color-negative-border);
         }
         
         .neutral {
-            background-color: rgba(200, 200, 200, 0.1);
-            border-left: 3px solid rgba(200, 200, 200, 0.5);
+            background-color: var(--color-neutral-bg);
+            border-left: 3px solid var(--color-neutral-border);
         }
         
         .positive {
-            background-color: rgba(100, 255, 100, 0.1);
-            border-left: 3px solid rgba(100, 255, 100, 0.5);
+            background-color: var(--color-positive-bg);
+            border-left: 3px solid var(--color-positive-border);
         }
         
         .conclusion {
-            font-size: 0.85em;
+            font-size: var(--font-size-base);
             font-style: italic;
-            margin-top: 10px;
+            margin-top: var(--spacing-md);
         }
         
         .ai-message h5 {
-            margin: 0 0 10px 0;
-            font-size: 1em;
+            margin: 0 0 var(--spacing-md) 0;
+            font-size: var(--font-size-lg);
             text-align: left;
         }
     </style>
@@ -359,6 +424,7 @@
 <body>
     <div class="reveal">
         <div class="slides">
+            <!-- First slide: Callout description -->
             <section>
                 <h4>„Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?"</h4>
                 <p class="description"><strong>Beschreibung:</strong> Rechter Populismus ist in Deutschland zunehmend präsent – in sozialen Medien, auf Demonstrationen und in der Politik. Er beeinflusst die öffentliche Meinung und das politische Klima.</p>
@@ -395,10 +461,13 @@
                 </ol>
             </section>
 
+            <!-- Second slide: AI analysis -->
             <section>
-                <h4>KI-Analyse von Callout-Daten</h4>
+                <h4>KI-Analyse Beispiel</h4>
                 <div class="chat-container">
+                    <!-- Chat messages area -->
                     <div class="chat-messages">
+                        <!-- User message -->
                         <div class="message user-message">
                             <div class="message-content">
                                 Welche Veränderungen in der politischen Debatte werden im <span class="prompt-function" onclick="toggleDropdown(event, 'callout-dropdown')">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?
@@ -420,6 +489,8 @@
                             </div>
                             <div class="message-time">10:42</div>
                         </div>
+                        
+                        <!-- AI response message -->
                         <div class="message ai-message">
                             <div class="message-content">
                                 <h5>Analyse der Veränderungen in der politischen Debatte</h5>
@@ -427,6 +498,7 @@
                                 <p>Basierend auf den Antworten zur Frage 1 lassen sich folgende Wahrnehmungen identifizieren:</p>
                                 
                                 <div class="analysis-summary">
+                                    <!-- Negative perceptions -->
                                     <div class="category negative">
                                         <h6>Negative Wahrnehmungen:</h6>
                                         <ul>
@@ -436,6 +508,7 @@
                                         </ul>
                                     </div>
                                     
+                                    <!-- Neutral perceptions -->
                                     <div class="category neutral">
                                         <h6>Neutrale Wahrnehmungen:</h6>
                                         <ul>
@@ -444,6 +517,7 @@
                                         </ul>
                                     </div>
                                     
+                                    <!-- Positive perceptions -->
                                     <div class="category positive">
                                         <h6>Positive Wahrnehmungen:</h6>
                                         <ul>
@@ -459,6 +533,7 @@
                         </div>
                     </div>
                     
+                    <!-- Chat input area -->
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
                             <button class="toolbar-button" onclick="insertPromptFunction('callout')">
@@ -483,7 +558,13 @@
     </div>
     
     <script>
-        // Improved dropdown toggle function for demonstration
+        // Constants
+        const DROPDOWN_SELECTOR = '.dropdown-content';
+        const PROMPT_FUNCTION_SELECTOR = '.prompt-function';
+        const DROPDOWN_ITEM_SELECTOR = '.dropdown-item';
+        const CHAT_INPUT_ID = 'chat-input';
+        
+        // Dropdown functionality
         function toggleDropdown(event, id) {
             // Prevent default behavior and stop propagation
             event.preventDefault();
@@ -492,7 +573,7 @@
             const dropdown = document.getElementById(id);
             
             // Close all other dropdowns first
-            document.querySelectorAll('.dropdown-content').forEach(el => {
+            document.querySelectorAll(DROPDOWN_SELECTOR).forEach(el => {
                 if (el.id !== id) {
                     el.classList.remove('show');
                 }
@@ -503,27 +584,27 @@
         }
         
         // Close dropdowns when clicking elsewhere
-        document.addEventListener('click', function(event) {
-            if (!event.target.matches('.prompt-function') && !event.target.matches('.dropdown-item')) {
-                document.querySelectorAll('.dropdown-content').forEach(el => {
+        function closeDropdownsOnOutsideClick(event) {
+            if (!event.target.matches(PROMPT_FUNCTION_SELECTOR) && !event.target.matches(DROPDOWN_ITEM_SELECTOR)) {
+                document.querySelectorAll(DROPDOWN_SELECTOR).forEach(el => {
                     el.classList.remove('show');
                 });
             }
-        });
+        }
         
         // Prevent dropdown items from navigating
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.dropdown-item').forEach(item => {
+        function preventDropdownNavigation() {
+            document.querySelectorAll(DROPDOWN_ITEM_SELECTOR).forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                 });
             });
-        });
+        }
         
         // Insert prompt function text into input field
         function insertPromptFunction(type) {
-            const input = document.getElementById('chat-input');
+            const input = document.getElementById(CHAT_INPUT_ID);
             let text = '';
             
             if (type === 'callout') {
@@ -532,6 +613,11 @@
                 text = '@Frage: 1 ';
             }
             
+            insertTextAtCursor(input, text);
+        }
+        
+        // Helper function to insert text at cursor position
+        function insertTextAtCursor(input, text) {
             // Insert at cursor position or append
             if (typeof input.selectionStart !== 'undefined') {
                 const startPos = input.selectionStart;
@@ -548,7 +634,7 @@
         
         // Send message (demo only)
         function sendMessage() {
-            const input = document.getElementById('chat-input');
+            const input = document.getElementById(CHAT_INPUT_ID);
             if (input.value.trim() !== '') {
                 // In a real app, this would send the message
                 // For demo purposes, just clear the input
@@ -557,13 +643,25 @@
             }
         }
         
-        // Allow Enter key to send message
-        document.getElementById('chat-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+        // Initialize event listeners
+        function initEventListeners() {
+            // Close dropdowns when clicking elsewhere
+            document.addEventListener('click', closeDropdownsOnOutsideClick);
+            
+            // Allow Enter key to send message
+            document.getElementById(CHAT_INPUT_ID).addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Initialize on DOM content loaded
+            document.addEventListener('DOMContentLoaded', preventDropdownNavigation);
+        }
+        
+        // Initialize the application
+        initEventListeners();
     </script>
 </body>
 </html> 
