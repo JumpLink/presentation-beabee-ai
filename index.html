@@ -470,15 +470,15 @@
                         <!-- User message -->
                         <div class="message user-message">
                             <div class="message-content">
-                                Welche Veränderungen in der politischen Debatte werden im <span class="prompt-function" onclick="toggleDropdown(event, 'callout-dropdown')">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?
-                                    <div class="dropdown-content" id="callout-dropdown">
+                                Welche Veränderungen in der politischen Debatte werden im <span class="prompt-function" onclick="toggleDropdown(event, 'callout-dropdown-1')">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?
+                                    <div class="dropdown-content" id="callout-dropdown-1">
                                         <div class="dropdown-header">Verfügbare Callouts:</div>
                                         <div class="dropdown-item active">Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?</div>
                                         <div class="dropdown-item">Klimawandel und persönliche Verantwortung</div>
                                         <div class="dropdown-item">Digitalisierung im Gesundheitswesen</div>
                                     </div>
-                                </span> am häufigsten genannt? Schaue dir dazu alle Antworten zu <span class="prompt-function" onclick="toggleDropdown(event, 'question-dropdown')">@Frage: 1
-                                    <div class="dropdown-content" id="question-dropdown">
+                                </span> am häufigsten genannt? Schaue dir dazu alle Antworten zu <span class="prompt-function" onclick="toggleDropdown(event, 'question-dropdown-1')">@Frage: 1
+                                    <div class="dropdown-content" id="question-dropdown-1">
                                         <div class="dropdown-header">Verfügbare Fragen:</div>
                                         <div class="dropdown-item active">1: Welche Veränderungen in der politischen Debatte hast du wahrgenommen?</div>
                                         <div class="dropdown-item">2: Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?</div>
@@ -536,16 +536,82 @@
                     <!-- Chat input area -->
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
-                            <button class="toolbar-button" onclick="insertPromptFunction('callout')">
+                            <button class="toolbar-button" onclick="insertPromptFunction('callout', 'chat-input-1')">
                                 <i>@</i>Callout
                             </button>
-                            <button class="toolbar-button" onclick="insertPromptFunction('frage')">
+                            <button class="toolbar-button" onclick="insertPromptFunction('frage', 'chat-input-1')">
                                 <i>@</i>Frage
                             </button>
                         </div>
                         <div class="chat-input-wrapper">
-                            <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input"></textarea>
-                            <button class="send-button" onclick="sendMessage()">
+                            <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-1"></textarea>
+                            <button class="send-button" onclick="sendMessage('chat-input-1')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Third slide: Translation example -->
+            <section>
+                <h4>KI-Übersetzung Beispiel</h4>
+                <div class="chat-container">
+                    <!-- Chat messages area -->
+                    <div class="chat-messages">
+                        <!-- User message -->
+                        <div class="message user-message">
+                            <div class="message-content">
+                                Bitte übersetze alle Antworten zu <span class="prompt-function" onclick="toggleDropdown(event, 'question-dropdown-2')">@Frage: 1
+                                    <div class="dropdown-content" id="question-dropdown-2">
+                                        <div class="dropdown-header">Verfügbare Fragen:</div>
+                                        <div class="dropdown-item active">1: Welche Veränderungen in der politischen Debatte hast du wahrgenommen?</div>
+                                        <div class="dropdown-item">2: Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?</div>
+                                        <div class="dropdown-item">3: Wie sollten Medien mit rechten populistischen Aussagen umgehen?</div>
+                                        <div class="dropdown-item">4: Wie hat sich dein Umgang mit politischen Diskussionen verändert?</div>
+                                    </div>
+                                </span> auf englisch
+                            </div>
+                            <div class="message-time">11:15</div>
+                        </div>
+                        
+                        <!-- AI response message -->
+                        <div class="message ai-message">
+                            <div class="message-content">
+                                <h5>English Translation of Responses</h5>
+                                
+                                <p>Here are the translated responses to Question 1 "What changes have you noticed in political debate?":</p>
+                                
+                                <div class="analysis-summary">
+                                    <div class="category neutral">
+                                        <h6>Translated Responses (Sample):</h6>
+                                        <ul>
+                                            <li>"I've noticed that right-wing rhetoric has become increasingly normalized in public discourse. Terms and positions that would have been considered extreme a few years ago are now part of everyday political discussions."</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <p class="conclusion">All responses have been translated to English while preserving their original meaning and context.</p>
+                            </div>
+                            <div class="message-time">11:16</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat input area -->
+                    <div class="chat-input-container">
+                        <div class="chat-toolbar">
+                            <button class="toolbar-button" onclick="insertPromptFunction('callout', 'chat-input-2')">
+                                <i>@</i>Callout
+                            </button>
+                            <button class="toolbar-button" onclick="insertPromptFunction('frage', 'chat-input-2')">
+                                <i>@</i>Frage
+                            </button>
+                        </div>
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-2"></textarea>
+                            <button class="send-button" onclick="sendMessage('chat-input-2')">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                 </svg>
