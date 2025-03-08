@@ -100,7 +100,6 @@
         
         /* Chat styling */
         .chat-container {
-  
             background-color: rgba(240, 240, 240, 0.05);
             border-radius: 10px;
             overflow: hidden;
@@ -159,6 +158,60 @@
         .prompt-function {
             color: #56b6c2;
             font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .prompt-function:hover {
+            text-decoration: underline;
+        }
+        
+        /* Dropdown styling */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #1e2129;
+            min-width: 250px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            border-radius: 6px;
+            padding: 8px 0;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            left: 0;
+            top: 100%;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            color: #fff;
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.85em;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(86, 182, 194, 0.2);
+        }
+        
+        .dropdown-item.active {
+            background-color: rgba(86, 182, 194, 0.3);
+            font-weight: bold;
+        }
+        
+        .dropdown-header {
+            padding: 8px 12px;
+            color: #56b6c2;
+            font-weight: bold;
+            font-size: 0.8em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 5px;
         }
         
         .analysis-summary {
@@ -260,7 +313,22 @@
                     <div class="chat-messages">
                         <div class="message user-message">
                             <div class="message-content">
-                                Welche Veränderungen in der politischen Debatte werden im <span class="prompt-function">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?</span> bei der <span class="prompt-function">@Frage: 1</span> am häufigsten genannt? Kannst du sie in positive, negative und neutrale Wahrnehmungen einteilen?
+                                Welche Veränderungen in der politischen Debatte werden im <span class="prompt-function" onclick="toggleDropdown(event, 'callout-dropdown')">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?
+                                    <div class="dropdown-content" id="callout-dropdown">
+                                        <div class="dropdown-header">Verfügbare Callouts:</div>
+                                        <div class="dropdown-item active">Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?</div>
+                                        <div class="dropdown-item">Klimawandel und persönliche Verantwortung</div>
+                                        <div class="dropdown-item">Digitalisierung im Gesundheitswesen</div>
+                                    </div>
+                                </span> in <span class="prompt-function" onclick="toggleDropdown(event, 'question-dropdown')">@Frage: 1
+                                    <div class="dropdown-content" id="question-dropdown">
+                                        <div class="dropdown-header">Verfügbare Fragen:</div>
+                                        <div class="dropdown-item active">1: Welche Veränderungen in der politischen Debatte hast du wahrgenommen?</div>
+                                        <div class="dropdown-item">2: Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?</div>
+                                        <div class="dropdown-item">3: Wie sollten Medien mit rechten populistischen Aussagen umgehen?</div>
+                                        <div class="dropdown-item">4: Wie hat sich dein Umgang mit politischen Diskussionen verändert?</div>
+                                    </div>
+                                </span> am häufigsten genannt? Kannst du sie in positive, negative und neutrale Wahrnehmungen einteilen?
                             </div>
                             <div class="message-time">10:42</div>
                         </div>
@@ -306,5 +374,45 @@
             </section>
         </div>
     </div>
+    
+    <script>
+        // Improved dropdown toggle function for demonstration
+        function toggleDropdown(event, id) {
+            // Prevent default behavior and stop propagation
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const dropdown = document.getElementById(id);
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.dropdown-content').forEach(el => {
+                if (el.id !== id) {
+                    el.classList.remove('show');
+                }
+            });
+            
+            // Toggle the clicked dropdown
+            dropdown.classList.toggle('show');
+        }
+        
+        // Close dropdowns when clicking elsewhere
+        document.addEventListener('click', function(event) {
+            if (!event.target.matches('.prompt-function') && !event.target.matches('.dropdown-item')) {
+                document.querySelectorAll('.dropdown-content').forEach(el => {
+                    el.classList.remove('show');
+                });
+            }
+        });
+        
+        // Prevent dropdown items from navigating
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

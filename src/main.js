@@ -8,8 +8,8 @@ const deck = new Reveal({
   hash: true,
   transition: 'slide',
   center: false,
-  // Enable scrolling within slides
-  mouseWheel: true,
+  // Disable mouseWheel navigation
+  mouseWheel: false,
   // Disable the default slide navigation when scrolling
   embedded: false,
   // Ensure content can be scrolled
@@ -58,4 +58,14 @@ document.addEventListener('wheel', function(event) {
   }
 }, true);
 
-deck.initialize(); 
+deck.initialize();
+
+// Prevent default behavior for links in dropdowns
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  });
+}); 
