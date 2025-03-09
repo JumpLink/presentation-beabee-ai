@@ -179,6 +179,12 @@ function insertTextAtCursor(input, text) {
 
 // Send message (demo only)
 window.sendMessage = function(inputId) {
+  // Check if our custom function exists and use it
+  if (typeof showConversation === 'function') {
+    showConversation(inputId);
+    return;
+  }
+  
   const input = document.getElementById(inputId);
   if (input.value.trim() !== '') {
     // In a real app, this would send the message

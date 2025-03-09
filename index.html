@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/node_modules/reveal.js/dist/reveal.css" />
-    <link rel="stylesheet" href="/node_modules/reveal.js/dist/theme/night.css" />
+    <link rel="stylesheet" href="/node_modules/reveal.js/dist/theme/moon.css" />
     <title>Beabee, AI Callout integration</title>
     <script type="module" src="./src/main.js"></script>
     <style>
@@ -84,6 +84,10 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         .reveal .slides h1, 
@@ -174,13 +178,21 @@
             margin-top: var(--spacing-md);
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
         
         .chat-messages {
             padding: var(--spacing-lg);
             flex: 1;
             overflow-y: auto;
-            max-height: calc(100vh - 320px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages.hidden {
+            visibility: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .message {
@@ -274,6 +286,7 @@
         .chat-input-wrapper {
             display: flex;
             align-items: flex-start;
+            position: relative;
         }
         
         .chat-input {
@@ -286,14 +299,40 @@
             font-size: var(--font-size-lg);
             outline: none;
             min-height: 60px;
-            max-height: 120px;
-            resize: none;
+            max-height: none; /* Remove max-height limitation */
+            height: auto; /* Allow height to adjust to content */
+            overflow-y: auto;
             font-family: inherit;
             line-height: 1.4;
+            transition: height 0.2s ease; /* Add transition for smooth height changes */
+        }
+        
+        .chat-input[contenteditable="true"] {
+            cursor: text;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow: visible; /* Ensure overflow content is visible */
+        }
+        
+        .chat-input[contenteditable="true"]:empty:before {
+            content: attr(data-placeholder);
+            color: var(--color-text-placeholder);
+            pointer-events: none;
+        }
+        
+        .chat-input[contenteditable="true"] .tag {
+            color: var(--color-primary);
+            font-weight: bold;
         }
         
         .chat-input::placeholder {
             color: var(--color-text-placeholder);
+        }
+        
+        /* Style for @ tags in messages and inputs */
+        .at-tag {
+            color: var(--color-primary);
+            font-weight: bold;
         }
         
         .send-button {
@@ -490,21 +529,20 @@
         }
         
         .chat-container {
-            border-radius: 0;
-            margin-top: 0;
-            box-shadow: none;
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Hide overflow */
-            max-height: calc(100vh - 160px); /* Adjust based on header height */
+            overflow: hidden;
+            margin-top: 0;
+            box-shadow: none;
         }
         
         .chat-messages {
-            padding: var(--spacing-lg);
             flex: 1;
             overflow-y: auto;
+            padding: var(--spacing-lg);
             max-height: none; /* Remove fixed max-height */
+            min-height: 0; /* Allow it to shrink */
         }
         
         .chat-input-container {
@@ -524,9 +562,12 @@
         /* Adjust chat frame for better viewport fit */
         .chat-frame {
             height: calc(100vh - 120px);
+            width: 90%;
+            max-width: 1200px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            flex: 1;
         }
 
         /* Callout preview styling */
@@ -669,6 +710,21 @@
             background-color: rgba(86, 182, 194, 0.2);
             font-weight: bold;
         }
+
+        /* Hide AI responses by default */
+        .ai-message {
+            display: block;
+        }
+
+        /* Show AI responses when parent has 'show-ai-response' class */
+        .show-ai-response .ai-message {
+            display: block;
+        }
+
+        /* Style for the show response button */
+        .show-response-button {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -747,7 +803,7 @@
                             </div>
                             
                             <!-- User confirmation -->
-                            <div class="message user-message">
+                            <div class="message user-message ai-message">
                                 <div class="message-content">
                                     Ja, bitte anlegen.
                                 </div>
@@ -775,8 +831,8 @@
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
-                                <textarea class="chat-input" placeholder="Schreibe eine Nachricht..." id="chat-input-0"></textarea>
-                                <button class="send-button" onclick="sendMessage('chat-input-0')">
+                                <div class="chat-input" contenteditable="true" data-placeholder="Schreibe eine Nachricht..." id="chat-input-0"></div>
+                                <button class="send-button" onclick="showConversation('chat-input-0')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -865,7 +921,7 @@
                             </div>
                             
                             <!-- User confirmation -->
-                            <div class="message user-message">
+                            <div class="message user-message ai-message">
                                 <div class="message-content">
                                     Ja, bitte füge sie ein.
                                 </div>
@@ -893,8 +949,8 @@
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
-                                <textarea class="chat-input" placeholder="Schreibe eine Nachricht..." id="chat-input-example"></textarea>
-                                <button class="send-button" onclick="sendMessage('chat-input-example')">
+                                <div class="chat-input" contenteditable="true" data-placeholder="Schreibe eine Nachricht..." id="chat-input-example"></div>
+                                <button class="send-button" onclick="showConversation('chat-input-example')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -996,8 +1052,8 @@
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
-                                <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-1"></textarea>
-                                <button class="send-button" onclick="sendMessage('chat-input-1')">
+                                <div class="chat-input" contenteditable="true" data-placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-1"></div>
+                                <button class="send-button" onclick="showConversation('chat-input-1')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -1071,8 +1127,8 @@
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
-                                <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-2"></textarea>
-                                <button class="send-button" onclick="sendMessage('chat-input-2')">
+                                <div class="chat-input" contenteditable="true" data-placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-2"></div>
+                                <button class="send-button" onclick="showConversation('chat-input-2')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -1132,7 +1188,7 @@
                             </div>
 
                             <!-- User confirmation -->
-                            <div class="message user-message">
+                            <div class="message user-message ai-message">
                                 <div class="message-content">
                                     Ja, bitte speichern.
                                 </div>
@@ -1160,8 +1216,8 @@
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
-                                <textarea class="chat-input" placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-3"></textarea>
-                                <button class="send-button" onclick="sendMessage('chat-input-3')">
+                                <div class="chat-input" contenteditable="true" data-placeholder="Stelle eine Frage zu den Callout-Daten..." id="chat-input-3"></div>
+                                <button class="send-button" onclick="showConversation('chat-input-3')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -1173,5 +1229,170 @@
             </section>
         </div>
     </div>
+    <script>
+        // Function to toggle dropdowns
+        function toggleDropdown(event, dropdownId) {
+            event.stopPropagation();
+            document.getElementById(dropdownId).classList.toggle("show");
+        }
+
+        // Function to toggle toolbar dropdowns
+        function toggleToolbarDropdown(event, dropdownId) {
+            event.stopPropagation();
+            // Implementation would go here
+        }
+
+        // Function to highlight @ tags in text
+        function highlightTags(text) {
+            if (!text) return '';
+            
+            // Replace @Callout: and @Frage: with highlighted spans
+            return text
+                .replace(/@Callout:/g, '<span class="tag">@Callout:</span>')
+                .replace(/@Frage:/g, '<span class="tag">@Frage:</span>');
+        }
+
+        // Function to adjust input height based on content
+        function adjustInputHeight(inputElement) {
+            // Reset height to auto to get the correct scrollHeight
+            inputElement.style.height = 'auto';
+            
+            // If the input is empty, set it to the default height
+            if (!inputElement.textContent.trim()) {
+                inputElement.style.height = '60px'; // Default min-height
+            } else {
+                // Set height to scrollHeight to fit all content
+                inputElement.style.height = inputElement.scrollHeight + 'px';
+            }
+        }
+
+        // Function to simulate sending a message and show the conversation
+        function showConversation(inputId) {
+            const inputElement = document.getElementById(inputId);
+            const chatContainer = inputElement.closest('.chat-container');
+            const messagesContainer = chatContainer.querySelector('.chat-messages');
+            
+            // Show all messages in the conversation
+            messagesContainer.classList.remove('hidden');
+            messagesContainer.style.visibility = 'visible';
+            
+            // Clear the input field
+            inputElement.innerHTML = '';
+            
+            // Reset input field height to default
+            inputElement.style.height = '60px';
+            
+            // Disable the input and send button to prevent multiple sends
+            inputElement.setAttribute('contenteditable', 'false');
+            const sendButton = inputElement.parentElement.querySelector('.send-button');
+            sendButton.disabled = true;
+            sendButton.style.opacity = '0.5';
+            
+            // Scroll to the top of the messages container instead of the bottom
+            messagesContainer.scrollTop = 0;
+        }
+
+        // Initialize the page - hide conversations and populate input fields
+        window.onload = function() {
+            // Get all chat containers
+            const chatContainers = document.querySelectorAll('.chat-container');
+            
+            chatContainers.forEach(container => {
+                // Get the messages container and input field
+                const messagesContainer = container.querySelector('.chat-messages');
+                const inputField = container.querySelector('.chat-input');
+                
+                // Hide the messages container initially
+                messagesContainer.classList.add('hidden');
+                messagesContainer.style.visibility = 'hidden';
+                
+                // Get the first user message
+                const firstUserMessage = messagesContainer.querySelector('.user-message .message-content');
+                
+                if (firstUserMessage && inputField) {
+                    // Get the text content without dropdown HTML
+                    let messageText = '';
+                    
+                    // Clone the message content to work with
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = firstUserMessage.innerHTML;
+                    
+                    // Remove dropdown content
+                    const dropdowns = tempDiv.querySelectorAll('.dropdown-content');
+                    dropdowns.forEach(dropdown => dropdown.remove());
+                    
+                    // Get the text content from the prompt-function elements
+                    const promptFunctions = tempDiv.querySelectorAll('.prompt-function');
+                    promptFunctions.forEach(promptFunction => {
+                        // Replace the prompt-function with its text content
+                        const text = promptFunction.textContent.trim();
+                        const textNode = document.createTextNode(text);
+                        promptFunction.parentNode.replaceChild(textNode, promptFunction);
+                    });
+                    
+                    // Get the final text content
+                    messageText = tempDiv.textContent.trim();
+                    
+                    // Set the input field value with highlighted @ tags
+                    inputField.innerHTML = highlightTags(messageText);
+                    
+                    // Adjust height to fit content
+                    adjustInputHeight(inputField);
+                    
+                    // Add input event listener to highlight @ tags while typing
+                    inputField.addEventListener('input', function() {
+                        const selection = window.getSelection();
+                        const range = selection.getRangeAt(0);
+                        const startOffset = range.startOffset;
+                        
+                        // Store the current content and cursor position
+                        const content = this.innerHTML;
+                        
+                        // Highlight @ tags
+                        this.innerHTML = highlightTags(this.textContent);
+                        
+                        // Adjust height to fit content
+                        adjustInputHeight(this);
+                        
+                        // Restore cursor position
+                        if (this.childNodes.length > 0) {
+                            try {
+                                const newRange = document.createRange();
+                                const textNode = this.childNodes[0];
+                                
+                                // Set cursor position
+                                newRange.setStart(textNode, Math.min(startOffset, textNode.length));
+                                newRange.setEnd(textNode, Math.min(startOffset, textNode.length));
+                                
+                                // Apply the range
+                                selection.removeAllRanges();
+                                selection.addRange(newRange);
+                            } catch (e) {
+                                console.error('Error restoring cursor position:', e);
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Override the sendMessage function from main.js
+            window.sendMessage = function(inputId) {
+                showConversation(inputId);
+            };
+        };
+
+        // Close dropdowns when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.prompt-function')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html> 
