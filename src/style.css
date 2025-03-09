@@ -1,5 +1,5 @@
 @import url('reveal.js/dist/reveal.css');
-@import url('reveal.js/dist/theme/night.css');
+@import url('reveal.js/dist/theme/black.css');
 
 /* CSS Variables */
 :root {
@@ -176,7 +176,6 @@ html, body {
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-container);
-    margin-top: var(--spacing-md);
     display: flex;
     flex-direction: column;
     height: 100%;

@@ -12,7 +12,19 @@ export class AIAnalysisSlide extends HTMLElement {
     }
 
     render() {
-        const translations = languageManager.translate('slides.aiAnalysis');
+        const translations = {
+            title: languageManager.translate('slides.aiAnalysis.title'),
+            userMessage: languageManager.translate('slides.aiAnalysis.userMessage'),
+            analysis: languageManager.translate('slides.aiAnalysis.analysis')
+        };
+        
+        const commonTranslations = {
+            placeholder: languageManager.translate('common.placeholder'),
+            toolbar: {
+                callout: languageManager.translate('common.toolbar.callout'),
+                question: languageManager.translate('common.toolbar.question')
+            }
+        };
         
         this.innerHTML = `
             <div class="chat-frame">
@@ -35,34 +47,34 @@ export class AIAnalysisSlide extends HTMLElement {
                         
                         <div class="message ai-message">
                             <div class="message-content">
-                                <h5>Analyse der Veränderungen in der politischen Debatte</h5>
+                                <h5>${translations.analysis.title}</h5>
                                 
-                                <p>Basierend auf den Antworten zur Frage 1 lassen sich folgende Wahrnehmungen identifizieren:</p>
+                                <p>${translations.analysis.intro}</p>
                                 
                                 <div class="analysis-summary">
                                     <div class="category negative">
-                                        <h6>Negative Wahrnehmungen:</h6>
+                                        <h6>${translations.analysis.categories.negative.title}</h6>
                                         <ul>
-                                            ${translations.analysis.negative.map(item => `<li>${item}</li>`).join('')}
+                                            ${translations.analysis.categories.negative.items.map(item => `<li>${item}</li>`).join('')}
                                         </ul>
                                     </div>
                                     
                                     <div class="category neutral">
-                                        <h6>Neutrale Wahrnehmungen:</h6>
+                                        <h6>${translations.analysis.categories.neutral.title}</h6>
                                         <ul>
-                                            ${translations.analysis.neutral.map(item => `<li>${item}</li>`).join('')}
+                                            ${translations.analysis.categories.neutral.items.map(item => `<li>${item}</li>`).join('')}
                                         </ul>
                                     </div>
                                     
                                     <div class="category positive">
-                                        <h6>Positive Wahrnehmungen:</h6>
+                                        <h6>${translations.analysis.categories.positive.title}</h6>
                                         <ul>
-                                            ${translations.analysis.positive.map(item => `<li>${item}</li>`).join('')}
+                                            ${translations.analysis.categories.positive.items.map(item => `<li>${item}</li>`).join('')}
                                         </ul>
                                     </div>
                                 </div>
                                 
-                                <p class="conclusion">Die Analyse zeigt, dass die Veränderungen überwiegend negativ wahrgenommen werden, insbesondere die Normalisierung rechter Rhetorik und die aggressivere Diskussionskultur.</p>
+                                <p class="conclusion">${translations.analysis.conclusion}</p>
                             </div>
                             <div class="message-time">10:43</div>
                         </div>
@@ -71,17 +83,17 @@ export class AIAnalysisSlide extends HTMLElement {
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
                             <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-1')">
-                                <i>@</i>Callout
+                                <i>@</i>${commonTranslations.toolbar.callout}
                             </button>
                             <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-1')">
-                                <i>@</i>Frage
+                                <i>@</i>${commonTranslations.toolbar.question}
                             </button>
                         </div>
                         
                         <div class="chat-input-wrapper">
                             <div class="chat-input" 
                                  contenteditable="true"
-                                 data-placeholder="${languageManager.translate('common.placeholder')}"
+                                 data-placeholder="${commonTranslations.placeholder}"
                                  id="chat-input-1">
                             </div>
                             <button class="send-button" onclick="sendMessage('chat-input-1')">

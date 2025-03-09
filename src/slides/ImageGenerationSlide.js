@@ -12,7 +12,27 @@ export class ImageGenerationSlide extends HTMLElement {
     }
 
     render() {
-        const translations = languageManager.translate('slides.imageGeneration');
+        const translations = {
+            title: languageManager.translate('slides.imageGeneration.title'),
+            userMessage: languageManager.translate('slides.imageGeneration.userMessage'),
+            preview: {
+                title: languageManager.translate('slides.imageGeneration.imagePreview.title'),
+                intro: languageManager.translate('slides.imageGeneration.imagePreview.intro'),
+                description: languageManager.translate('slides.imageGeneration.imagePreview.description'),
+                confirmText: languageManager.translate('slides.imageGeneration.imagePreview.confirmText'),
+                userConfirmation: languageManager.translate('slides.imageGeneration.imagePreview.userConfirmation'),
+                successText: languageManager.translate('slides.imageGeneration.imagePreview.successText')
+            }
+        };
+        
+        const commonTranslations = {
+            confirmationMessage: languageManager.translate('common.confirmationMessage'),
+            placeholder: languageManager.translate('common.placeholder'),
+            toolbar: {
+                callout: languageManager.translate('common.toolbar.callout'),
+                question: languageManager.translate('common.toolbar.question')
+            }
+        };
         
         this.innerHTML = `
             <div class="chat-frame">
@@ -30,56 +50,54 @@ export class ImageGenerationSlide extends HTMLElement {
                             <div class="message-content">
                                 ${translations.userMessage}
                             </div>
-                            <div class="message-time">11:30</div>
+                            <div class="message-time">10:50</div>
                         </div>
                         
                         <div class="message ai-message">
                             <div class="message-content">
-                                <h5>Generiertes Teaser-Bild</h5>
+                                <h5>${translations.preview.title}</h5>
+                                <p>${translations.preview.intro}</p>
                                 
-                                <p>Hier ist ein Teaser-Bild für den Callout zum Thema Einfluss des rechten Populismus auf die politische Debatte in Deutschland:</p>
-                                
-                                <div class="image-container">
-                                    <img src="./src/assets/ai-generated-image-example.png" alt="Teaser image for callout about right-wing populism" class="generated-image">
+                                <div class="image-preview">
+                                    <!-- Image would be dynamically inserted here -->
+                                    <p class="image-description">${translations.preview.description}</p>
                                 </div>
                                 
-                                <p>Dieses Bild stellt visuell das Thema des Callouts dar und verdeutlicht den Einfluss des rechten Populismus auf den politischen Diskurs in Deutschland.</p>
-                                
-                                <p>Möchtest du dieses Bild als Teaser-Bild für den Callout speichern?</p>
+                                <p>${translations.preview.confirmText}</p>
                             </div>
-                            <div class="message-time">11:31</div>
+                            <div class="message-time">10:51</div>
                         </div>
-
+                        
                         <div class="message user-message">
                             <div class="message-content">
-                                Ja, bitte speichern.
+                                ${translations.preview.userConfirmation}
                             </div>
-                            <div class="message-time">11:32</div>
+                            <div class="message-time">10:52</div>
                         </div>
-
+                        
                         <div class="message ai-message">
                             <div class="message-content">
-                                <p>${languageManager.translate('common.confirmationMessage')}</p>
-                                <p>Es wird nun bei der Anzeige des Callouts in Beabee verwendet.</p>
+                                <p>${commonTranslations.confirmationMessage}</p>
+                                <p>${translations.preview.successText}</p>
                             </div>
-                            <div class="message-time">11:32</div>
+                            <div class="message-time">10:52</div>
                         </div>
                     </div>
                     
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
                             <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-3')">
-                                <i>@</i>Callout
+                                <i>@</i>${commonTranslations.toolbar.callout}
                             </button>
                             <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-3')">
-                                <i>@</i>Frage
+                                <i>@</i>${commonTranslations.toolbar.question}
                             </button>
                         </div>
                         
                         <div class="chat-input-wrapper">
                             <div class="chat-input" 
                                  contenteditable="true"
-                                 data-placeholder="${languageManager.translate('common.placeholder')}"
+                                 data-placeholder="${commonTranslations.placeholder}"
                                  id="chat-input-3">
                             </div>
                             <button class="send-button" onclick="sendMessage('chat-input-3')">

@@ -19,13 +19,26 @@ export class CalloutCreationSlide extends HTMLElement {
             calloutPreview: {
                 title: languageManager.translate('slides.calloutCreation.calloutPreview.title'),
                 description: languageManager.translate('slides.calloutCreation.calloutPreview.description'),
-                questions: languageManager.translate('slides.calloutCreation.calloutPreview.questions')
+                questions: languageManager.translate('slides.calloutCreation.calloutPreview.questions'),
+                previewTitle: languageManager.translate('slides.calloutCreation.calloutPreview.previewTitle'),
+                introText: languageManager.translate('slides.calloutCreation.calloutPreview.introText'),
+                questionsTitle: languageManager.translate('slides.calloutCreation.calloutPreview.questionsTitle'),
+                confirmText: languageManager.translate('slides.calloutCreation.calloutPreview.confirmText'),
+                userConfirmation: languageManager.translate('slides.calloutCreation.calloutPreview.userConfirmation'),
+                successText: languageManager.translate('slides.calloutCreation.calloutPreview.successText')
             }
         };
         
         const commonTranslations = {
             confirmationMessage: languageManager.translate('common.confirmationMessage'),
-            placeholder: languageManager.translate('common.placeholder')
+            placeholder: languageManager.translate('common.placeholder'),
+            toolbar: {
+                callout: languageManager.translate('common.toolbar.callout'),
+                question: languageManager.translate('common.toolbar.question')
+            },
+            ui: {
+                created: languageManager.translate('common.ui.created')
+            }
         };
         
         this.innerHTML = `
@@ -49,8 +62,8 @@ export class CalloutCreationSlide extends HTMLElement {
                         
                         <div class="message ai-message">
                             <div class="message-content">
-                                <h5>Callout-Vorschlag</h5>
-                                <p>Ich habe einen Callout zum Thema "${calloutTranslations.calloutPreview.title}" erstellt. Hier ist der Vorschlag:</p>
+                                <h5>${calloutTranslations.calloutPreview.previewTitle}</h5>
+                                <p>${calloutTranslations.calloutPreview.introText} "${calloutTranslations.calloutPreview.title}" ${commonTranslations.ui.created}</p>
                                 
                                 <div class="callout-preview">
                                     <div class="callout-header">
@@ -60,7 +73,7 @@ export class CalloutCreationSlide extends HTMLElement {
                                         <p>${calloutTranslations.calloutPreview.description}</p>
                                     </div>
                                     <div class="callout-questions-section">
-                                        <p>Beantworten Sie folgende Fragen:</p>
+                                        <p>${calloutTranslations.calloutPreview.questionsTitle}</p>
                                         <ul class="callout-questions-preview">
                                             ${calloutTranslations.calloutPreview.questions.map(question => `
                                                 <li class="question-item">
@@ -72,14 +85,14 @@ export class CalloutCreationSlide extends HTMLElement {
                                     </div>
                                 </div>
                                 
-                                <p>Möchten Sie diesen Callout in Beabee anlegen?</p>
+                                <p>${calloutTranslations.calloutPreview.confirmText}</p>
                             </div>
                             <div class="message-time">10:31</div>
                         </div>
                         
                         <div class="message user-message">
                             <div class="message-content">
-                                Ja, bitte anlegen.
+                                ${calloutTranslations.calloutPreview.userConfirmation}
                             </div>
                             <div class="message-time">10:32</div>
                         </div>
@@ -87,7 +100,7 @@ export class CalloutCreationSlide extends HTMLElement {
                         <div class="message ai-message">
                             <div class="message-content">
                                 <p>${commonTranslations.confirmationMessage}</p>
-                                <p>Sie können die Antworten jederzeit über das @Callout-Tag in unseren Chats analysieren.</p>
+                                <p>${calloutTranslations.calloutPreview.successText}</p>
                             </div>
                             <div class="message-time">10:32</div>
                         </div>
@@ -96,10 +109,10 @@ export class CalloutCreationSlide extends HTMLElement {
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
                             <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-0')">
-                                <i>@</i>Callout
+                                <i>@</i>${commonTranslations.toolbar.callout}
                             </button>
                             <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-0')">
-                                <i>@</i>Frage
+                                <i>@</i>${commonTranslations.toolbar.question}
                             </button>
                         </div>
                         

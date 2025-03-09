@@ -12,7 +12,30 @@ export class TranslationSlide extends HTMLElement {
     }
 
     render() {
-        const translations = languageManager.translate('slides.translation');
+        const translations = {
+            title: languageManager.translate('slides.translation.title'),
+            userMessage: languageManager.translate('slides.translation.userMessage'),
+            preview: {
+                title: languageManager.translate('slides.translation.translationPreview.title'),
+                intro: languageManager.translate('slides.translation.translationPreview.intro'),
+                confirmText: languageManager.translate('slides.translation.translationPreview.confirmText'),
+                userConfirmation: languageManager.translate('slides.translation.translationPreview.userConfirmation'),
+                successText: languageManager.translate('slides.translation.translationPreview.successText'),
+                questionContext: languageManager.translate('slides.translation.translationPreview.questionContext'),
+                exampleTitle: languageManager.translate('slides.translation.translationPreview.exampleTitle'),
+                exampleTranslation: languageManager.translate('slides.translation.translationPreview.exampleTranslation'),
+                conclusion: languageManager.translate('slides.translation.translationPreview.conclusion')
+            }
+        };
+        
+        const commonTranslations = {
+            confirmationMessage: languageManager.translate('common.confirmationMessage'),
+            placeholder: languageManager.translate('common.placeholder'),
+            toolbar: {
+                callout: languageManager.translate('common.toolbar.callout'),
+                question: languageManager.translate('common.toolbar.question')
+            }
+        };
         
         this.innerHTML = `
             <div class="chat-frame">
@@ -30,44 +53,62 @@ export class TranslationSlide extends HTMLElement {
                             <div class="message-content">
                                 ${translations.userMessage}
                             </div>
-                            <div class="message-time">11:15</div>
+                            <div class="message-time">10:45</div>
                         </div>
                         
                         <div class="message ai-message">
                             <div class="message-content">
-                                <h5>Englische Übersetzung der Antworten</h5>
+                                <h5>${translations.preview.title}</h5>
+                                <p>${translations.preview.intro}</p>
                                 
-                                <p>Hier sind die übersetzten Antworten zu Frage 1 "What changes have you noticed in political debate?":</p>
+                                <p>${translations.preview.questionContext}</p>
                                 
-                                <div class="analysis-summary">
+                                <div class="translations-preview">
                                     <div class="category neutral">
-                                        <h6>Übersetzte Antworten (Beispiel):</h6>
+                                        <h6>${translations.preview.exampleTitle}</h6>
                                         <ul>
-                                            <li>"I've noticed that right-wing rhetoric has become increasingly normalized in public discourse. Terms and positions that would have been considered extreme a few years ago are now part of everyday political discussions."</li>
+                                            <li>${translations.preview.exampleTranslation}</li>
                                         </ul>
                                     </div>
                                 </div>
                                 
-                                <p class="conclusion">Alle Antworten wurden ins Englische übersetzt, wobei die ursprüngliche Bedeutung und der Kontext erhalten geblieben sind.</p>
+                                <p class="conclusion">${translations.preview.conclusion}</p>
+                                
+                                <p>${translations.preview.confirmText}</p>
                             </div>
-                            <div class="message-time">11:16</div>
+                            <div class="message-time">10:46</div>
+                        </div>
+                        
+                        <div class="message user-message">
+                            <div class="message-content">
+                                ${translations.preview.userConfirmation}
+                            </div>
+                            <div class="message-time">10:47</div>
+                        </div>
+                        
+                        <div class="message ai-message">
+                            <div class="message-content">
+                                <p>${commonTranslations.confirmationMessage}</p>
+                                <p>${translations.preview.successText}</p>
+                            </div>
+                            <div class="message-time">10:47</div>
                         </div>
                     </div>
                     
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
                             <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-2')">
-                                <i>@</i>Callout
+                                <i>@</i>${commonTranslations.toolbar.callout}
                             </button>
                             <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-2')">
-                                <i>@</i>Frage
+                                <i>@</i>${commonTranslations.toolbar.question}
                             </button>
                         </div>
                         
                         <div class="chat-input-wrapper">
                             <div class="chat-input" 
                                  contenteditable="true"
-                                 data-placeholder="${languageManager.translate('common.placeholder')}"
+                                 data-placeholder="${commonTranslations.placeholder}"
                                  id="chat-input-2">
                             </div>
                             <button class="send-button" onclick="sendMessage('chat-input-2')">

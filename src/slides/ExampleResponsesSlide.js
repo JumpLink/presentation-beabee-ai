@@ -12,7 +12,27 @@ export class ExampleResponsesSlide extends HTMLElement {
     }
 
     render() {
-        const translations = languageManager.translate('slides.exampleResponses');
+        // Get translations using individual keys
+        const translations = {
+            title: languageManager.translate('slides.exampleResponses.title'),
+            userMessage: languageManager.translate('slides.exampleResponses.userMessage'),
+            responses: languageManager.translate('slides.exampleResponses.responses'),
+            confirmText: languageManager.translate('slides.exampleResponses.confirmText'),
+            successText: languageManager.translate('slides.exampleResponses.successText'),
+            userConfirmation: languageManager.translate('slides.exampleResponses.userConfirmation')
+        };
+        
+        const commonTranslations = {
+            confirmationMessage: languageManager.translate('common.confirmationMessage'),
+            placeholder: languageManager.translate('common.placeholder'),
+            toolbar: {
+                callout: languageManager.translate('common.toolbar.callout'),
+                question: languageManager.translate('common.toolbar.question')
+            },
+            ui: {
+                exampleResponsesTitle: languageManager.translate('common.ui.exampleResponsesTitle')
+            }
+        };
         
         this.innerHTML = `
             <div class="chat-frame">
@@ -35,7 +55,7 @@ export class ExampleResponsesSlide extends HTMLElement {
                         
                         <div class="message ai-message">
                             <div class="message-content">
-                                <h5>Beispiel-Antworten</h5>
+                                <h5>${commonTranslations.ui.exampleResponsesTitle}</h5>
                                 <div class="responses-preview">
                                     ${translations.responses.map(response => `
                                         <div class="response-item">
@@ -49,22 +69,22 @@ export class ExampleResponsesSlide extends HTMLElement {
                                     `).join('')}
                                 </div>
                                 
-                                <p>Möchtest du diese Beispiel-Antworten für Demonstrationszwecke in den Callout einfügen?</p>
+                                <p>${translations.confirmText}</p>
                             </div>
                             <div class="message-time">10:36</div>
                         </div>
                         
                         <div class="message user-message">
                             <div class="message-content">
-                                Ja, bitte füge sie ein.
+                                ${translations.userConfirmation}
                             </div>
                             <div class="message-time">10:37</div>
                         </div>
                         
                         <div class="message ai-message">
                             <div class="message-content">
-                                <p>${languageManager.translate('common.confirmationMessage')}</p>
-                                <p>Du kannst sie jetzt für Analysen und Demonstrationen verwenden. Die Antworten decken verschiedene Perspektiven ab und eignen sich gut, um die Funktionen der KI-Analyse zu zeigen.</p>
+                                <p>${commonTranslations.confirmationMessage}</p>
+                                <p>${translations.successText}</p>
                             </div>
                             <div class="message-time">10:37</div>
                         </div>
@@ -73,17 +93,17 @@ export class ExampleResponsesSlide extends HTMLElement {
                     <div class="chat-input-container">
                         <div class="chat-toolbar">
                             <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-example')">
-                                <i>@</i>Callout
+                                <i>@</i>${commonTranslations.toolbar.callout}
                             </button>
                             <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-example')">
-                                <i>@</i>Frage
+                                <i>@</i>${commonTranslations.toolbar.question}
                             </button>
                         </div>
                         
                         <div class="chat-input-wrapper">
                             <div class="chat-input" 
                                  contenteditable="true"
-                                 data-placeholder="${languageManager.translate('common.placeholder')}"
+                                 data-placeholder="${commonTranslations.placeholder}"
                                  id="chat-input-example">
                             </div>
                             <button class="send-button" onclick="sendMessage('chat-input-example')">
