@@ -84,6 +84,10 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         .reveal .slides h1, 
@@ -441,7 +445,10 @@
             overflow: hidden;
             margin: var(--spacing-xl) auto;
             max-width: 90%;
+            max-height: calc(100vh - 100px); /* Limit height to viewport minus some margin */
             background-color: var(--color-background-dark);
+            display: flex;
+            flex-direction: column;
         }
         
         .chat-header {
@@ -451,6 +458,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0; /* Prevent header from shrinking */
         }
         
         .chat-title {
@@ -488,6 +496,47 @@
             border-radius: 0;
             margin-top: 0;
             box-shadow: none;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Hide overflow */
+            max-height: calc(100vh - 160px); /* Adjust based on header height */
+        }
+        
+        .chat-messages {
+            padding: var(--spacing-lg);
+            flex: 1;
+            overflow-y: auto;
+            max-height: none; /* Remove fixed max-height */
+        }
+        
+        .chat-input-container {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-lg);
+            background-color: var(--color-user-message);
+            flex-shrink: 0; /* Prevent input area from shrinking */
+        }
+
+        /* Ensure slides take full height */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Make sure chat frame fits in viewport */
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* Adjust chat frame for better viewport fit */
+        .chat-frame {
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
         }
     </style>
 </head>
