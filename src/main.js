@@ -1,6 +1,25 @@
 import Reveal from 'reveal.js';
-import 'reveal.js/dist/reveal.css';
-import 'reveal.js/dist/theme/night.css';
+import { ChatFrame } from './components/ChatFrame.js';
+import { ChatInput } from './components/ChatInput.js';
+import { ChatMessage } from './components/ChatMessage.js';
+import { languageManager } from './i18n/LanguageManager.js';
+
+// Import slides
+import { CalloutCreationSlide } from './slides/CalloutCreationSlide.js';
+import { ExampleResponsesSlide } from './slides/ExampleResponsesSlide.js';
+import { AIAnalysisSlide } from './slides/AIAnalysisSlide.js';
+import { TranslationSlide } from './slides/TranslationSlide.js';
+import { ImageGenerationSlide } from './slides/ImageGenerationSlide.js';
+
+// Register custom elements
+customElements.define('chat-frame', ChatFrame);
+customElements.define('chat-input', ChatInput);
+customElements.define('chat-message', ChatMessage);
+customElements.define('callout-creation-slide', CalloutCreationSlide);
+customElements.define('example-responses-slide', ExampleResponsesSlide);
+customElements.define('ai-analysis-slide', AIAnalysisSlide);
+customElements.define('translation-slide', TranslationSlide);
+customElements.define('image-generation-slide', ImageGenerationSlide);
 
 // Initialize Reveal.js
 const deck = new Reveal({
@@ -29,6 +48,8 @@ const deck = new Reveal({
     'data-prevent-swipe': ''
   }
 });
+
+console.log('Reveal.js initialized');
 
 // Add event listener to handle scrolling within slides
 document.addEventListener('wheel', function(event) {
@@ -82,41 +103,25 @@ const AVAILABLE_QUESTIONS = [
   "4: Wie hat sich dein Umgang mit politischen Diskussionen verändert?"
 ];
 
-// Dropdown functionality
-window.toggleDropdown = function(event, id) {
-  // Prevent default behavior and stop propagation
-  event.preventDefault();
+// Function to toggle dropdowns
+window.toggleDropdown = function(event, dropdownId) {
   event.stopPropagation();
-  
-  const dropdown = document.getElementById(id);
-  
-  // Close all other dropdowns first
-  document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
-    if (el.id !== id) {
-      el.classList.remove('show');
-    }
-  });
-  
-  // Toggle the clicked dropdown
-  dropdown.classList.toggle('show');
+  document.getElementById(dropdownId).classList.toggle("show");
 };
 
-// Toggle toolbar dropdown
-window.toggleToolbarDropdown = function(event, id) {
-  // Prevent default behavior and stop propagation
-  event.preventDefault();
+// Function to toggle toolbar dropdowns
+window.toggleToolbarDropdown = function(event, dropdownId) {
   event.stopPropagation();
-  
-  const dropdown = document.getElementById(id);
   
   // Close all other dropdowns first
   document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
-    if (el.id !== id) {
+    if (el.id !== dropdownId) {
       el.classList.remove('show');
     }
   });
   
   // Toggle the clicked dropdown
+  const dropdown = document.getElementById(dropdownId);
   dropdown.classList.toggle('show');
 };
 
@@ -142,6 +147,30 @@ function preventDropdownNavigation() {
   });
 }
 
+// Function to highlight @ tags in text
+function highlightTags(text) {
+  if (!text) return '';
+  
+  // Replace @Callout: and @Frage: with highlighted spans
+  return text
+    .replace(/@Callout:/g, '<span class="tag">@Callout:</span>')
+    .replace(/@Frage:/g, '<span class="tag">@Frage:</span>');
+}
+
+// Function to adjust input height based on content
+function adjustInputHeight(inputElement) {
+  // Reset height to auto to get the correct scrollHeight
+  inputElement.style.height = 'auto';
+  
+  // If the input is empty, set it to the default height
+  if (!inputElement.textContent.trim()) {
+    inputElement.style.height = '60px'; // Default min-height
+  } else {
+    // Set height to scrollHeight to fit all content
+    inputElement.style.height = inputElement.scrollHeight + 'px';
+  }
+}
+
 // Insert prompt function text into input field
 window.insertPromptFunction = function(type, value, inputId) {
   const input = document.getElementById(inputId);
@@ -163,35 +192,69 @@ window.insertPromptFunction = function(type, value, inputId) {
 
 // Helper function to insert text at cursor position
 function insertTextAtCursor(input, text) {
-  // Insert at cursor position or append
-  if (typeof input.selectionStart !== 'undefined') {
+  if (input.getAttribute('contenteditable') === 'true') {
+    // For contenteditable elements
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    
+    // Create a text node with the text to insert
+    const textNode = document.createTextNode(text);
+    
+    // Insert the text node at the cursor position
+    range.insertNode(textNode);
+    
+    // Move the cursor to the end of the inserted text
+    range.setStartAfter(textNode);
+    range.setEndAfter(textNode);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    // Highlight tags
+    input.innerHTML = highlightTags(input.textContent);
+    
+    // Adjust height to fit content
+    adjustInputHeight(input);
+  } else {
+    // For regular input elements
     const startPos = input.selectionStart;
     const endPos = input.selectionEnd;
     input.value = input.value.substring(0, startPos) + text + input.value.substring(endPos);
     input.selectionStart = input.selectionEnd = startPos + text.length;
-  } else {
-    input.value += text;
   }
   
   // Focus the input
   input.focus();
 }
 
-// Send message (demo only)
-window.sendMessage = function(inputId) {
-  // Check if our custom function exists and use it
-  if (typeof showConversation === 'function') {
-    showConversation(inputId);
-    return;
-  }
+// Function to simulate sending a message and show the conversation
+window.showConversation = function(inputId) {
+  const inputElement = document.getElementById(inputId);
+  const chatContainer = inputElement.closest('.chat-container');
+  const messagesContainer = chatContainer.querySelector('.chat-messages');
   
-  const input = document.getElementById(inputId);
-  if (input.value.trim() !== '') {
-    // In a real app, this would send the message
-    // For demo purposes, just clear the input
-    input.value = '';
-    input.focus();
-  }
+  // Show all messages in the conversation
+  messagesContainer.classList.remove('hidden');
+  messagesContainer.style.visibility = 'visible';
+  
+  // Clear the input field
+  inputElement.innerHTML = '';
+  
+  // Reset input field height to default
+  inputElement.style.height = '60px';
+  
+  // Disable the input and send button to prevent multiple sends
+  inputElement.setAttribute('contenteditable', 'false');
+  const sendButton = inputElement.parentElement.querySelector('.send-button');
+  sendButton.disabled = true;
+  sendButton.style.opacity = '0.5';
+  
+  // Scroll to the top of the messages container instead of the bottom
+  messagesContainer.scrollTop = 0;
+};
+
+// Send message function
+window.sendMessage = function(inputId) {
+  showConversation(inputId);
 };
 
 // Initialize toolbar dropdowns
@@ -241,6 +304,90 @@ function initToolbarDropdowns() {
   });
 }
 
+// Initialize chat inputs with content from first user message
+function initChatInputs() {
+  // Get all chat containers
+  const chatContainers = document.querySelectorAll('.chat-container');
+  
+  chatContainers.forEach(container => {
+    // Get the messages container and input field
+    const messagesContainer = container.querySelector('.chat-messages');
+    const inputField = container.querySelector('.chat-input');
+    
+    // Hide the messages container initially
+    messagesContainer.classList.add('hidden');
+    messagesContainer.style.visibility = 'hidden';
+    
+    // Get the first user message
+    const firstUserMessage = messagesContainer.querySelector('.user-message .message-content');
+    
+    if (firstUserMessage && inputField) {
+      // Get the text content without dropdown HTML
+      let messageText = '';
+      
+      // Clone the message content to work with
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = firstUserMessage.innerHTML;
+      
+      // Remove dropdown content
+      const dropdowns = tempDiv.querySelectorAll('.dropdown-content');
+      dropdowns.forEach(dropdown => dropdown.remove());
+      
+      // Get the text content from the prompt-function elements
+      const promptFunctions = tempDiv.querySelectorAll('.prompt-function');
+      promptFunctions.forEach(promptFunction => {
+        // Replace the prompt-function with its text content
+        const text = promptFunction.textContent.trim();
+        const textNode = document.createTextNode(text);
+        promptFunction.parentNode.replaceChild(textNode, promptFunction);
+      });
+      
+      // Get the final text content
+      messageText = tempDiv.textContent.trim();
+      
+      // Set the input field value with highlighted @ tags
+      inputField.innerHTML = highlightTags(messageText);
+      
+      // Adjust height to fit content
+      adjustInputHeight(inputField);
+      
+      // Add input event listener to highlight @ tags while typing
+      inputField.addEventListener('input', function() {
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        const startOffset = range.startOffset;
+        
+        // Store the current content and cursor position
+        const content = this.innerHTML;
+        
+        // Highlight @ tags
+        this.innerHTML = highlightTags(this.textContent);
+        
+        // Adjust height to fit content
+        adjustInputHeight(this);
+        
+        // Restore cursor position
+        if (this.childNodes.length > 0) {
+          try {
+            const newRange = document.createRange();
+            const textNode = this.childNodes[0];
+            
+            // Set cursor position
+            newRange.setStart(textNode, Math.min(startOffset, textNode.length));
+            newRange.setEnd(textNode, Math.min(startOffset, textNode.length));
+            
+            // Apply the range
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+          } catch (e) {
+            console.error('Error restoring cursor position:', e);
+          }
+        }
+      });
+    }
+  });
+}
+
 // Initialize event listeners
 function initEventListeners() {
   // Close dropdowns when clicking elsewhere
@@ -261,7 +408,36 @@ function initEventListeners() {
   
   // Initialize dropdown navigation prevention
   preventDropdownNavigation();
+  
+  // Initialize chat inputs
+  initChatInputs();
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', initEventListeners); 
+document.addEventListener('DOMContentLoaded', initEventListeners);
+
+// Initialize language selector
+function initializeLanguageSelector() {
+    const languageButtons = document.querySelectorAll('.language-selector button');
+    languageButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const lang = button.getAttribute('data-lang');
+            languageManager.setLanguage(lang);
+            
+            // Update active state
+            languageButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+        });
+        
+        // Set initial active state
+        if (button.getAttribute('data-lang') === languageManager.getCurrentLanguage()) {
+            button.classList.add('active');
+        }
+    });
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+    initializeLanguageSelector();
+}); 
