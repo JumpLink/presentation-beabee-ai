@@ -15,16 +15,94 @@ export class ChatInput extends HTMLElement {
         const inputId = this.getAttribute('input-id') || 'chat-input';
 
         this.shadowRoot.innerHTML = `
-            <div class="chat-input" 
-                 contenteditable="true" 
-                 data-placeholder="${placeholder}" 
-                 id="${inputId}">
+            <style>
+                :host {
+                    display: block;
+                    width: 100%;
+                }
+                
+                .chat-input-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    width: 100%;
+                }
+                
+                .chat-input {
+                    background-color: var(--color-chat-input-bg, #2a2e38);
+                    border: 1px solid var(--color-border-light, #3a3f4b);
+                    border-radius: 24px;
+                    padding: 12px 18px;
+                    color: var(--color-text, #e1e3e6);
+                    font-size: 16px;
+                    outline: none;
+                    min-height: 60px;
+                    max-height: none;
+                    height: auto;
+                    overflow-y: auto;
+                    font-family: inherit;
+                    line-height: 1.4;
+                    transition: height 0.2s ease;
+                    width: 100%;
+                    box-sizing: border-box;
+                    flex: 1;
+                }
+                
+                .chat-input[contenteditable="true"] {
+                    cursor: text;
+                    white-space: pre-wrap;
+                    word-break: break-word;
+                    overflow: visible;
+                }
+                
+                .chat-input[contenteditable="true"]:empty:before {
+                    content: attr(data-placeholder);
+                    color: var(--color-text-placeholder, #6c7280);
+                    pointer-events: none;
+                }
+                
+                .tag {
+                    color: var(--color-primary, #56b6c2);
+                    font-weight: bold;
+                }
+                
+                .send-button {
+                    background-color: var(--color-primary, #56b6c2);
+                    color: var(--color-background-dark, #1e2129);
+                    border: none;
+                    border-radius: 50%;
+                    width: 62px;
+                    height: 62px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background-color 0.2s ease;
+                    flex-shrink: 0;
+                }
+                
+                .send-button:hover {
+                    background-color: var(--color-primary-hover, #67c7d3);
+                }
+                
+                .send-button svg {
+                    width: 30px;
+                    height: 30px;
+                }
+            </style>
+            
+            <div class="chat-input-container" part="chat-input-container">
+                <div class="chat-input" 
+                     contenteditable="true" 
+                     data-placeholder="${placeholder}" 
+                     part="chat-input">
+                </div>
+                <button class="send-button" part="send-button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                </button>
             </div>
-            <button class="send-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
-                </svg>
-            </button>
         `;
     }
 
@@ -53,10 +131,14 @@ export class ChatInput extends HTMLElement {
     }
 
     adjustInputHeight(inputElement) {
+        // Reset height to auto to get the correct scrollHeight
         inputElement.style.height = 'auto';
+        
+        // If the input is empty, set it to the default height
         if (!inputElement.textContent.trim()) {
-            inputElement.style.height = '60px';
+            inputElement.style.height = '60px'; // Default min-height
         } else {
+            // Set height to scrollHeight to fit all content
             inputElement.style.height = inputElement.scrollHeight + 'px';
         }
     }

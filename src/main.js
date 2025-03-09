@@ -114,7 +114,7 @@ window.toggleToolbarDropdown = function(event, dropdownId) {
   event.stopPropagation();
   
   // Close all other dropdowns first
-  document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
+  document.querySelectorAll(TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
     if (el.id !== dropdownId) {
       el.classList.remove('show');
     }
@@ -122,16 +122,17 @@ window.toggleToolbarDropdown = function(event, dropdownId) {
   
   // Toggle the clicked dropdown
   const dropdown = document.getElementById(dropdownId);
-  dropdown.classList.toggle('show');
+  if (dropdown) {
+    dropdown.classList.toggle('show');
+  }
 };
 
 // Close dropdowns when clicking elsewhere
 function closeDropdownsOnOutsideClick(event) {
-  if (!event.target.matches(PROMPT_FUNCTION_SELECTOR) && 
-      !event.target.matches(DROPDOWN_ITEM_SELECTOR) && 
-      !event.target.matches(TOOLBAR_BUTTON_SELECTOR) &&
-      !event.target.matches('i')) {
-    document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
+  if (!event.target.matches(TOOLBAR_BUTTON_SELECTOR) && 
+      !event.target.matches('i') &&
+      !event.target.closest(TOOLBAR_DROPDOWN_SELECTOR)) {
+    document.querySelectorAll(TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
       el.classList.remove('show');
     });
   }
@@ -173,7 +174,20 @@ function adjustInputHeight(inputElement) {
 
 // Insert prompt function text into input field
 window.insertPromptFunction = function(type, value, inputId) {
-  const input = document.getElementById(inputId);
+  console.log('Inserting prompt function:', type, value, inputId);
+  
+  const chatInput = document.querySelector(`chat-input[input-id="${inputId}"]`);
+  if (!chatInput) {
+    console.warn('No chat-input found with input-id:', inputId);
+    return;
+  }
+  
+  const input = chatInput.shadowRoot.querySelector('.chat-input');
+  if (!input) {
+    console.warn('No .chat-input found in shadow DOM');
+    return;
+  }
+  
   let text = '';
   
   if (type === 'callout') {
@@ -182,44 +196,44 @@ window.insertPromptFunction = function(type, value, inputId) {
     text = '@Frage: ' + value.split(':')[0].trim() + ' ';
   }
   
-  insertTextAtCursor(input, text);
+  insertTextAtCursor(input, text, chatInput);
   
   // Close all dropdowns
-  document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
+  document.querySelectorAll(TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
     el.classList.remove('show');
   });
 };
 
 // Helper function to insert text at cursor position
-function insertTextAtCursor(input, text) {
+function insertTextAtCursor(input, text, chatInput) {
   if (input.getAttribute('contenteditable') === 'true') {
-    // For contenteditable elements
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    
-    // Create a text node with the text to insert
-    const textNode = document.createTextNode(text);
-    
-    // Insert the text node at the cursor position
-    range.insertNode(textNode);
-    
-    // Move the cursor to the end of the inserted text
-    range.setStartAfter(textNode);
-    range.setEndAfter(textNode);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    
-    // Highlight tags
-    input.innerHTML = highlightTags(input.textContent);
-    
-    // Adjust height to fit content
-    adjustInputHeight(input);
-  } else {
-    // For regular input elements
-    const startPos = input.selectionStart;
-    const endPos = input.selectionEnd;
-    input.value = input.value.substring(0, startPos) + text + input.value.substring(endPos);
-    input.selectionStart = input.selectionEnd = startPos + text.length;
+    try {
+      // For contenteditable elements
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+      
+      // Create a text node with the text to insert
+      const textNode = document.createTextNode(text);
+      
+      // Insert the text node at the cursor position
+      range.insertNode(textNode);
+      
+      // Move the cursor to the end of the inserted text
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      // Highlight tags
+      input.innerHTML = highlightTags(input.textContent);
+      
+      // Adjust height to fit content
+      if (chatInput && typeof chatInput.adjustInputHeight === 'function') {
+        chatInput.adjustInputHeight(input);
+      }
+    } catch (error) {
+      console.error('Error inserting text at cursor:', error);
+    }
   }
   
   // Focus the input
@@ -228,27 +242,50 @@ function insertTextAtCursor(input, text) {
 
 // Function to simulate sending a message and show the conversation
 window.showConversation = function(inputId) {
-  const inputElement = document.getElementById(inputId);
-  const chatContainer = inputElement.closest('.chat-container');
-  const messagesContainer = chatContainer.querySelector('.chat-messages');
+  console.log('Showing conversation for input:', inputId);
+  
+  const chatInput = document.querySelector(`chat-input[input-id="${inputId}"]`);
+  if (!chatInput) {
+    console.warn('No chat-input found with input-id:', inputId);
+    return;
+  }
+  
+  const chatFrame = chatInput.closest('chat-frame');
+  if (!chatFrame) {
+    console.warn('No chat-frame found for chat-input:', chatInput);
+    return;
+  }
+  
+  const messagesContainer = chatFrame.querySelector('[slot="messages"]');
+  if (!messagesContainer) {
+    console.warn('No messages slot found in chat-frame:', chatFrame);
+    return;
+  }
   
   // Show all messages in the conversation
-  messagesContainer.classList.remove('hidden');
+  messagesContainer.style.display = 'block';
   messagesContainer.style.visibility = 'visible';
   
   // Clear the input field
-  inputElement.innerHTML = '';
+  const input = chatInput.shadowRoot.querySelector('.chat-input');
+  if (input) {
+    input.innerHTML = '';
+    
+    // Reset input field height
+    if (typeof chatInput.adjustInputHeight === 'function') {
+      chatInput.adjustInputHeight(input);
+    }
+    
+    // Disable the input and send button
+    input.setAttribute('contenteditable', 'false');
+    const sendButton = chatInput.shadowRoot.querySelector('.send-button');
+    if (sendButton) {
+      sendButton.disabled = true;
+      sendButton.style.opacity = '0.5';
+    }
+  }
   
-  // Reset input field height to default
-  inputElement.style.height = '60px';
-  
-  // Disable the input and send button to prevent multiple sends
-  inputElement.setAttribute('contenteditable', 'false');
-  const sendButton = inputElement.parentElement.querySelector('.send-button');
-  sendButton.disabled = true;
-  sendButton.style.opacity = '0.5';
-  
-  // Scroll to the top of the messages container instead of the bottom
+  // Scroll to the top of the messages container
   messagesContainer.scrollTop = 0;
 };
 
@@ -259,48 +296,92 @@ window.sendMessage = function(inputId) {
 
 // Initialize toolbar dropdowns
 function initToolbarDropdowns() {
+  console.log('Initializing toolbar dropdowns');
+  
   // Create callout dropdowns
-  document.querySelectorAll('.toolbar-button-callout').forEach((button, index) => {
-    const inputId = button.getAttribute('data-input-id');
-    const dropdownId = 'toolbar-callout-dropdown-' + inputId;
-    
-    // Create dropdown content
-    let dropdownHTML = `
-      <div class="toolbar-dropdown" id="${dropdownId}">
-        <div class="dropdown-header">Verfügbare Callouts:</div>
-    `;
-    
-    // Add dropdown items
-    AVAILABLE_CALLOUTS.forEach(callout => {
-      dropdownHTML += `<div class="dropdown-item" onclick="insertPromptFunction('callout', '${callout}', '${inputId}')">${callout}</div>`;
-    });
-    
-    dropdownHTML += '</div>';
-    
-    // Append dropdown to button
-    button.insertAdjacentHTML('beforeend', dropdownHTML);
+  document.querySelectorAll('.toolbar-button-callout').forEach((button) => {
+    try {
+      const chatFrame = button.closest('chat-frame');
+      if (!chatFrame) {
+        console.warn('No chat-frame found for button:', button);
+        return;
+      }
+      
+      const chatInput = chatFrame.querySelector('chat-input');
+      if (!chatInput) {
+        console.warn('No chat-input found in chat-frame for button:', button);
+        return;
+      }
+      
+      const inputId = chatInput.getAttribute('input-id');
+      if (!inputId) {
+        console.warn('No input-id attribute found on chat-input:', chatInput);
+        return;
+      }
+      
+      const dropdownId = `toolbar-callout-dropdown-${inputId}`;
+      
+      // Create dropdown content
+      let dropdownHTML = `
+        <div class="toolbar-dropdown" id="${dropdownId}">
+          <div class="dropdown-header">Verfügbare Callouts:</div>
+      `;
+      
+      // Add dropdown items
+      AVAILABLE_CALLOUTS.forEach(callout => {
+        dropdownHTML += `<div class="dropdown-item" onclick="insertPromptFunction('callout', '${callout}', '${inputId}')">${callout}</div>`;
+      });
+      
+      dropdownHTML += '</div>';
+      
+      // Append dropdown to button
+      button.insertAdjacentHTML('beforeend', dropdownHTML);
+    } catch (error) {
+      console.error('Error initializing callout dropdown:', error);
+    }
   });
   
   // Create question dropdowns
-  document.querySelectorAll('.toolbar-button-frage').forEach((button, index) => {
-    const inputId = button.getAttribute('data-input-id');
-    const dropdownId = 'toolbar-frage-dropdown-' + inputId;
-    
-    // Create dropdown content
-    let dropdownHTML = `
-      <div class="toolbar-dropdown" id="${dropdownId}">
-        <div class="dropdown-header">Verfügbare Fragen:</div>
-    `;
-    
-    // Add dropdown items
-    AVAILABLE_QUESTIONS.forEach(question => {
-      dropdownHTML += `<div class="dropdown-item" onclick="insertPromptFunction('frage', '${question}', '${inputId}')">${question}</div>`;
-    });
-    
-    dropdownHTML += '</div>';
-    
-    // Append dropdown to button
-    button.insertAdjacentHTML('beforeend', dropdownHTML);
+  document.querySelectorAll('.toolbar-button-frage').forEach((button) => {
+    try {
+      const chatFrame = button.closest('chat-frame');
+      if (!chatFrame) {
+        console.warn('No chat-frame found for button:', button);
+        return;
+      }
+      
+      const chatInput = chatFrame.querySelector('chat-input');
+      if (!chatInput) {
+        console.warn('No chat-input found in chat-frame for button:', button);
+        return;
+      }
+      
+      const inputId = chatInput.getAttribute('input-id');
+      if (!inputId) {
+        console.warn('No input-id attribute found on chat-input:', chatInput);
+        return;
+      }
+      
+      const dropdownId = `toolbar-frage-dropdown-${inputId}`;
+      
+      // Create dropdown content
+      let dropdownHTML = `
+        <div class="toolbar-dropdown" id="${dropdownId}">
+          <div class="dropdown-header">Verfügbare Fragen:</div>
+      `;
+      
+      // Add dropdown items
+      AVAILABLE_QUESTIONS.forEach(question => {
+        dropdownHTML += `<div class="dropdown-item" onclick="insertPromptFunction('frage', '${question}', '${inputId}')">${question}</div>`;
+      });
+      
+      dropdownHTML += '</div>';
+      
+      // Append dropdown to button
+      button.insertAdjacentHTML('beforeend', dropdownHTML);
+    } catch (error) {
+      console.error('Error initializing question dropdown:', error);
+    }
   });
 }
 
@@ -390,6 +471,8 @@ function initChatInputs() {
 
 // Initialize event listeners
 function initEventListeners() {
+  console.log('Initializing event listeners');
+  
   // Close dropdowns when clicking elsewhere
   document.addEventListener('click', closeDropdownsOnOutsideClick);
   
@@ -403,18 +486,32 @@ function initEventListeners() {
     });
   });
   
-  // Initialize toolbar dropdowns
-  initToolbarDropdowns();
-  
   // Initialize dropdown navigation prevention
   preventDropdownNavigation();
-  
-  // Initialize chat inputs
-  initChatInputs();
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', initEventListeners);
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM content loaded');
+  initEventListeners();
+  initializeLanguageSelector();
+  
+  // Wait for custom elements to be defined and rendered
+  setTimeout(() => {
+    console.log('Initializing toolbar dropdowns after delay');
+    initToolbarDropdowns();
+    
+    // Initialize chat inputs after components are loaded
+    document.querySelectorAll('chat-input').forEach(input => {
+      input.addEventListener('messageSent', function(e) {
+        const inputId = this.getAttribute('input-id');
+        if (inputId) {
+          sendMessage(inputId);
+        }
+      });
+    });
+  }, 500); // Give components time to render
+});
 
 // Initialize language selector
 function initializeLanguageSelector() {
@@ -435,9 +532,4 @@ function initializeLanguageSelector() {
             button.classList.add('active');
         }
     });
-}
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
-    initializeLanguageSelector();
-}); 
+} 
