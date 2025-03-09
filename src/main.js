@@ -65,6 +65,22 @@ deck.initialize();
 const DROPDOWN_SELECTOR = '.dropdown-content';
 const PROMPT_FUNCTION_SELECTOR = '.prompt-function';
 const DROPDOWN_ITEM_SELECTOR = '.dropdown-item';
+const TOOLBAR_BUTTON_SELECTOR = '.toolbar-button';
+const TOOLBAR_DROPDOWN_SELECTOR = '.toolbar-dropdown';
+
+// Available callouts and questions for toolbar dropdowns
+const AVAILABLE_CALLOUTS = [
+  "Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?",
+  "Klimawandel und persönliche Verantwortung",
+  "Digitalisierung im Gesundheitswesen"
+];
+
+const AVAILABLE_QUESTIONS = [
+  "1: Welche Veränderungen in der politischen Debatte hast du wahrgenommen?",
+  "2: Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?",
+  "3: Wie sollten Medien mit rechten populistischen Aussagen umgehen?",
+  "4: Wie hat sich dein Umgang mit politischen Diskussionen verändert?"
+];
 
 // Dropdown functionality
 window.toggleDropdown = function(event, id) {
@@ -75,7 +91,26 @@ window.toggleDropdown = function(event, id) {
   const dropdown = document.getElementById(id);
   
   // Close all other dropdowns first
-  document.querySelectorAll(DROPDOWN_SELECTOR).forEach(el => {
+  document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
+    if (el.id !== id) {
+      el.classList.remove('show');
+    }
+  });
+  
+  // Toggle the clicked dropdown
+  dropdown.classList.toggle('show');
+};
+
+// Toggle toolbar dropdown
+window.toggleToolbarDropdown = function(event, id) {
+  // Prevent default behavior and stop propagation
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const dropdown = document.getElementById(id);
+  
+  // Close all other dropdowns first
+  document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
     if (el.id !== id) {
       el.classList.remove('show');
     }
@@ -87,8 +122,11 @@ window.toggleDropdown = function(event, id) {
 
 // Close dropdowns when clicking elsewhere
 function closeDropdownsOnOutsideClick(event) {
-  if (!event.target.matches(PROMPT_FUNCTION_SELECTOR) && !event.target.matches(DROPDOWN_ITEM_SELECTOR)) {
-    document.querySelectorAll(DROPDOWN_SELECTOR).forEach(el => {
+  if (!event.target.matches(PROMPT_FUNCTION_SELECTOR) && 
+      !event.target.matches(DROPDOWN_ITEM_SELECTOR) && 
+      !event.target.matches(TOOLBAR_BUTTON_SELECTOR) &&
+      !event.target.matches('i')) {
+    document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
       el.classList.remove('show');
     });
   }
@@ -105,17 +143,22 @@ function preventDropdownNavigation() {
 }
 
 // Insert prompt function text into input field
-window.insertPromptFunction = function(type, inputId) {
+window.insertPromptFunction = function(type, value, inputId) {
   const input = document.getElementById(inputId);
   let text = '';
   
   if (type === 'callout') {
-    text = '@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland? ';
+    text = '@Callout: ' + value + ' ';
   } else if (type === 'frage') {
-    text = '@Frage: 1 ';
+    text = '@Frage: ' + value.split(':')[0].trim() + ' ';
   }
   
   insertTextAtCursor(input, text);
+  
+  // Close all dropdowns
+  document.querySelectorAll(DROPDOWN_SELECTOR + ', ' + TOOLBAR_DROPDOWN_SELECTOR).forEach(el => {
+    el.classList.remove('show');
+  });
 };
 
 // Helper function to insert text at cursor position
@@ -145,6 +188,53 @@ window.sendMessage = function(inputId) {
   }
 };
 
+// Initialize toolbar dropdowns
+function initToolbarDropdowns() {
+  // Create callout dropdowns
+  document.querySelectorAll('.toolbar-button-callout').forEach((button, index) => {
+    const inputId = button.getAttribute('data-input-id');
+    const dropdownId = 'toolbar-callout-dropdown-' + inputId;
+    
+    // Create dropdown content
+    let dropdownHTML = `
+      <div class="toolbar-dropdown" id="${dropdownId}">
+        <div class="dropdown-header">Verfügbare Callouts:</div>
+    `;
+    
+    // Add dropdown items
+    AVAILABLE_CALLOUTS.forEach(callout => {
+      dropdownHTML += `<div class="dropdown-item" onclick="insertPromptFunction('callout', '${callout}', '${inputId}')">${callout}</div>`;
+    });
+    
+    dropdownHTML += '</div>';
+    
+    // Append dropdown to button
+    button.insertAdjacentHTML('beforeend', dropdownHTML);
+  });
+  
+  // Create question dropdowns
+  document.querySelectorAll('.toolbar-button-frage').forEach((button, index) => {
+    const inputId = button.getAttribute('data-input-id');
+    const dropdownId = 'toolbar-frage-dropdown-' + inputId;
+    
+    // Create dropdown content
+    let dropdownHTML = `
+      <div class="toolbar-dropdown" id="${dropdownId}">
+        <div class="dropdown-header">Verfügbare Fragen:</div>
+    `;
+    
+    // Add dropdown items
+    AVAILABLE_QUESTIONS.forEach(question => {
+      dropdownHTML += `<div class="dropdown-item" onclick="insertPromptFunction('frage', '${question}', '${inputId}')">${question}</div>`;
+    });
+    
+    dropdownHTML += '</div>';
+    
+    // Append dropdown to button
+    button.insertAdjacentHTML('beforeend', dropdownHTML);
+  });
+}
+
 // Initialize event listeners
 function initEventListeners() {
   // Close dropdowns when clicking elsewhere
@@ -160,8 +250,11 @@ function initEventListeners() {
     });
   });
   
-  // Initialize on DOM content loaded
-  document.addEventListener('DOMContentLoaded', preventDropdownNavigation);
+  // Initialize toolbar dropdowns
+  initToolbarDropdowns();
+  
+  // Initialize dropdown navigation prevention
+  preventDropdownNavigation();
 }
 
 // Initialize the application

@@ -260,6 +260,7 @@
             font-size: var(--font-size-md);
             margin-right: var(--spacing-md);
             cursor: pointer;
+            position: relative;
         }
         
         .toolbar-button:hover {
@@ -624,6 +625,50 @@
             font-size: var(--font-size-base);
             font-style: italic;
         }
+
+        /* Toolbar dropdown styling */
+        .toolbar-dropdown {
+            display: none;
+            position: absolute;
+            background-color: var(--color-background-dark);
+            min-width: 250px;
+            box-shadow: var(--shadow-dropdown);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-sm) 0;
+            z-index: 1000;
+            border: 1px solid var(--color-border);
+            left: 0;
+            bottom: 100%; /* Position above the button instead of below */
+            margin-bottom: 5px; /* Add margin to bottom instead of top */
+            max-height: 300px; /* Limit height */
+            overflow-y: auto; /* Add scrolling if needed */
+        }
+
+        .toolbar-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 8px 16px;
+            font-weight: bold;
+            color: var(--color-primary);
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 5px;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(86, 182, 194, 0.1);
+        }
+
+        .dropdown-item.active {
+            background-color: rgba(86, 182, 194, 0.2);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -722,16 +767,16 @@
                         <!-- Chat input area -->
                         <div class="chat-input-container">
                             <div class="chat-toolbar">
-                                <button class="toolbar-button">
+                                <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-0')" data-input-id="chat-input-0">
                                     <i>@</i>Callout
                                 </button>
-                                <button class="toolbar-button">
+                                <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-0')" data-input-id="chat-input-0">
                                     <i>@</i>Frage
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
                                 <textarea class="chat-input" placeholder="Schreibe eine Nachricht..." id="chat-input-0"></textarea>
-                                <button class="send-button">
+                                <button class="send-button" onclick="sendMessage('chat-input-0')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -840,16 +885,16 @@
                         <!-- Chat input area -->
                         <div class="chat-input-container">
                             <div class="chat-toolbar">
-                                <button class="toolbar-button">
+                                <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-example')" data-input-id="chat-input-example">
                                     <i>@</i>Callout
                                 </button>
-                                <button class="toolbar-button">
+                                <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-example')" data-input-id="chat-input-example">
                                     <i>@</i>Frage
                                 </button>
                             </div>
                             <div class="chat-input-wrapper">
                                 <textarea class="chat-input" placeholder="Schreibe eine Nachricht..." id="chat-input-example"></textarea>
-                                <button class="send-button">
+                                <button class="send-button" onclick="sendMessage('chat-input-example')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                                     </svg>
@@ -943,10 +988,10 @@
                         <!-- Chat input area -->
                         <div class="chat-input-container">
                             <div class="chat-toolbar">
-                                <button class="toolbar-button" onclick="insertPromptFunction('callout', 'chat-input-1')">
+                                <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-1')" data-input-id="chat-input-1">
                                     <i>@</i>Callout
                                 </button>
-                                <button class="toolbar-button" onclick="insertPromptFunction('frage', 'chat-input-1')">
+                                <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-1')" data-input-id="chat-input-1">
                                     <i>@</i>Frage
                                 </button>
                             </div>
@@ -1018,10 +1063,10 @@
                         <!-- Chat input area -->
                         <div class="chat-input-container">
                             <div class="chat-toolbar">
-                                <button class="toolbar-button" onclick="insertPromptFunction('callout', 'chat-input-2')">
+                                <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-2')" data-input-id="chat-input-2">
                                     <i>@</i>Callout
                                 </button>
-                                <button class="toolbar-button" onclick="insertPromptFunction('frage', 'chat-input-2')">
+                                <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-2')" data-input-id="chat-input-2">
                                     <i>@</i>Frage
                                 </button>
                             </div>
@@ -1107,10 +1152,10 @@
                         <!-- Chat input area -->
                         <div class="chat-input-container">
                             <div class="chat-toolbar">
-                                <button class="toolbar-button" onclick="insertPromptFunction('callout', 'chat-input-3')">
+                                <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-3')" data-input-id="chat-input-3">
                                     <i>@</i>Callout
                                 </button>
-                                <button class="toolbar-button" onclick="insertPromptFunction('frage', 'chat-input-3')">
+                                <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-3')" data-input-id="chat-input-3">
                                     <i>@</i>Frage
                                 </button>
                             </div>
