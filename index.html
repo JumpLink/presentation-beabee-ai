@@ -587,6 +587,43 @@
         .question-text {
             font-weight: normal;
         }
+
+        /* Example responses styling */
+        .responses-preview {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .response-item {
+            background-color: var(--color-background-light);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            border: 1px solid var(--color-border-light);
+        }
+
+        .response-header {
+            background-color: rgba(86, 182, 194, 0.1);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .response-type {
+            font-weight: bold;
+            color: var(--color-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        .response-content {
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .response-content p {
+            margin: 0;
+            font-size: var(--font-size-base);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -705,7 +742,125 @@
                 </div>
             </section>
 
-            <!-- Second slide: AI analysis -->
+            <!-- Second slide: Generate example responses -->
+            <section>
+                <div class="chat-frame">
+                    <div class="chat-header">
+                        <div class="chat-title">Beispiel-Antworten generieren</div>
+                        <div class="chat-controls">
+                            <button class="chat-control-button chat-minimize"></button>
+                            <button class="chat-control-button chat-maximize"></button>
+                            <button class="chat-control-button chat-close"></button>
+                        </div>
+                    </div>
+                    <div class="chat-container">
+                        <!-- Chat messages area -->
+                        <div class="chat-messages">
+                            <!-- User message -->
+                            <div class="message user-message">
+                                <div class="message-content">
+                                    Generiere bitte einige Beispiel-Antworten für <span class="prompt-function" onclick="toggleDropdown(event, 'callout-dropdown-2')">@Callout: Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?
+                                        <div class="dropdown-content" id="callout-dropdown-2">
+                                            <div class="dropdown-header">Verfügbare Callouts:</div>
+                                            <div class="dropdown-item active">Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?</div>
+                                            <div class="dropdown-item">Klimawandel und persönliche Verantwortung</div>
+                                            <div class="dropdown-item">Digitalisierung im Gesundheitswesen</div>
+                                        </div>
+                                    </span> mit unterschiedlichen Perspektiven.
+                                </div>
+                                <div class="message-time">10:35</div>
+                            </div>
+                            
+                            <!-- AI response message -->
+                            <div class="message ai-message">
+                                <div class="message-content">
+                                    <h5>Beispiel-Antworten</h5>
+                                    
+                                    <div class="responses-preview">
+                                        <div class="response-item">
+                                            <div class="response-header">
+                                                <span class="response-type">Besorgt, faktenorientiert</span>
+                                            </div>
+                                            <div class="response-content">
+                                                <p>„Mir fällt auf, dass rechte Parolen salonfähiger geworden sind. Themen wie Migration oder Gender werden zunehmend aggressiver diskutiert, oft mit falschen oder manipulierten Fakten. Besonders beunruhigend ist, dass Verschwörungstheorien immer mehr Anklang finden und Politiker:innen Angst haben, sich klar gegen rechte Hetze zu positionieren."</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="response-item">
+                                            <div class="response-header">
+                                                <span class="response-type">Relativierend, neutral</span>
+                                            </div>
+                                            <div class="response-content">
+                                                <p>„Ich sehe durchaus eine Verschiebung im Diskurs, aber nicht nur auf der rechten Seite. Auch linke Gruppen werden lauter, und es gibt zunehmend Polarisierung auf beiden Seiten. Soziale Medien verstärken das, weil extreme Meinungen dort mehr Aufmerksamkeit bekommen."</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="response-item">
+                                            <div class="response-header">
+                                                <span class="response-type">Populistisch, verschwörungstheoretisch</span>
+                                            </div>
+                                            <div class="response-content">
+                                                <p>„Die etablierten Medien verdrehen die Wahrheit, um rechte Stimmen zu unterdrücken. Zum Glück gibt es das Internet, wo Menschen endlich die Wahrheit sagen können! Früher gab es nur eine Meinung, heute kann jeder selbst nachdenken und erkennen, was wirklich passiert."</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="response-item">
+                                            <div class="response-header">
+                                                <span class="response-type">Persönliche Erfahrung, aktivistisch</span>
+                                            </div>
+                                            <div class="response-content">
+                                                <p>„Ich war lange unpolitisch, aber seit ich sehe, wie rechte Narrative verbreitet werden, engagiere ich mich mehr. Ich diskutiere mit Freund:innen, gehe zu Demos und versuche, Fake News zu entlarven. Besonders wichtig ist, dass Journalist:innen klar Stellung beziehen und Fakten gegen rechte Desinformation setzen."</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <p>Möchtest du diese Beispiel-Antworten für Demonstrationszwecke in den Callout einfügen?</p>
+                                </div>
+                                <div class="message-time">10:36</div>
+                            </div>
+                            
+                            <!-- User confirmation -->
+                            <div class="message user-message">
+                                <div class="message-content">
+                                    Ja, bitte füge sie ein.
+                                </div>
+                                <div class="message-time">10:37</div>
+                            </div>
+                            
+                            <!-- AI confirmation -->
+                            <div class="message ai-message">
+                                <div class="message-content">
+                                    <p>✅ Die Beispiel-Antworten wurden erfolgreich zum Callout hinzugefügt.</p>
+                                    <p>Du kannst sie jetzt für Analysen und Demonstrationen verwenden. Die Antworten decken verschiedene Perspektiven ab und eignen sich gut, um die Funktionen der KI-Analyse zu zeigen.</p>
+                                </div>
+                                <div class="message-time">10:37</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat input area -->
+                        <div class="chat-input-container">
+                            <div class="chat-toolbar">
+                                <button class="toolbar-button">
+                                    <i>@</i>Callout
+                                </button>
+                                <button class="toolbar-button">
+                                    <i>@</i>Frage
+                                </button>
+                            </div>
+                            <div class="chat-input-wrapper">
+                                <textarea class="chat-input" placeholder="Schreibe eine Nachricht..." id="chat-input-example"></textarea>
+                                <button class="send-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Third slide: AI analysis -->
             <section>
                 <div class="chat-frame">
                     <div class="chat-header">
@@ -808,7 +963,7 @@
                 </div>
             </section>
 
-            <!-- Third slide: Translation example -->
+            <!-- Fourth slide: Translation example -->
             <section>
                 <div class="chat-frame">
                     <div class="chat-header">
@@ -883,7 +1038,7 @@
                 </div>
             </section>
 
-            <!-- Fourth slide: Image generation example -->
+            <!-- Fifth slide: Image generation example -->
             <section>
                 <div class="chat-frame">
                     <div class="chat-header">
