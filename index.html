@@ -84,10 +84,6 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
         
         .reveal .slides h1, 
@@ -524,60 +520,189 @@
             overflow: hidden;
         }
 
-        /* Make sure chat frame fits in viewport */
-        section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
         /* Adjust chat frame for better viewport fit */
         .chat-frame {
             height: calc(100vh - 120px);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Callout preview styling */
+        .callout-preview {
+            background-color: var(--color-background-light);
+            border-radius: var(--border-radius-md);
+            padding: 0;
+            margin: var(--spacing-md) 0;
+            border: 1px solid var(--color-border-light);
+            overflow: hidden;
+        }
+
+        .callout-header {
+            background-color: var(--color-primary-light);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .callout-header h6 {
+            margin: 0;
+            color: var(--color-primary);
+            font-size: var(--font-size-md);
+            text-align: center;
+        }
+
+        .callout-description {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-light);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .callout-description p {
+            margin: 0;
+        }
+
+        .callout-questions-section {
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .callout-questions-section p {
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+
+        .callout-questions-preview {
+            margin: 0;
+            padding-left: var(--spacing-xl);
+        }
+
+        .callout-questions-preview li {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .question-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .question-text {
+            font-weight: normal;
         }
     </style>
 </head>
 <body>
     <div class="reveal">
         <div class="slides">
-            <!-- First slide: Callout description -->
+            <!-- First slide: Callout creation -->
             <section>
-                <h4>„Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?"</h4>
-                <p class="description"><strong>Beschreibung:</strong> Rechter Populismus ist in Deutschland zunehmend präsent – in sozialen Medien, auf Demonstrationen und in der Politik. Er beeinflusst die öffentliche Meinung und das politische Klima.</p>
-                
-                <p class="questions-title"><strong>Fragen im Callout:</strong></p>
-                
-                <ol class="questions-list">
-                    <li>
-                        Welche Veränderungen in der politischen Debatte hast du wahrgenommen?
-                        <span class="answer-type">(✍️ Freitext)</span>
-                    </li>
-                    
-                    <li>
-                        Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?
-                        <span class="answer-type">(🔘 Mehrfachauswahl)</span>
-                        <ul>
-                            <li>Sie verstärken rechte Meinungen und bieten ihnen eine Plattform.</li>
-                            <li>Sie helfen, Desinformation und Verschwörungstheorien zu verbreiten.</li>
-                            <li>Sie ermöglichen auch Gegenstimmen und kritische Diskussionen.</li>
-                            <li>Sie haben keinen wesentlichen Einfluss.</li>
-                            <li>Andere (Freitext)</li>
-                        </ul>
-                    </li>
-                    
-                    <li>
-                        Wie sollten Medien mit rechten populistischen Aussagen umgehen?
-                        <span class="answer-type">(✍️ Freitext)</span>
-                    </li>
-                    
-                    <li>
-                        Wie hat sich dein Umgang mit politischen Diskussionen verändert?
-                        <span class="answer-type">(🔘 Skala 1-10: meide völlig → diskutiere mehr)</span>
-                    </li>
-                </ol>
+                <div class="chat-frame">
+                    <div class="chat-header">
+                        <div class="chat-title">Callout-Erstellung mit KI</div>
+                        <div class="chat-controls">
+                            <button class="chat-control-button chat-minimize"></button>
+                            <button class="chat-control-button chat-maximize"></button>
+                            <button class="chat-control-button chat-close"></button>
+                        </div>
+                    </div>
+                    <div class="chat-container">
+                        <!-- Chat messages area -->
+                        <div class="chat-messages">
+                            <!-- User message -->
+                            <div class="message user-message">
+                                <div class="message-content">
+                                    Erstelle bitte ein Callout zum Thema "Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?"
+                                </div>
+                                <div class="message-time">10:30</div>
+                            </div>
+                            
+                            <!-- AI response message with improved callout preview -->
+                            <div class="message ai-message">
+                                <div class="message-content">
+                                    <h5>Callout-Vorschlag</h5>
+                                    
+                                    <div class="callout-preview">
+                                        <div class="callout-header">
+                                            <h6>„Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?"</h6>
+                                        </div>
+                                        
+                                        <div class="callout-description">
+                                            <p><strong>Beschreibung:</strong> Rechter Populismus ist in Deutschland zunehmend präsent – in sozialen Medien, auf Demonstrationen und in der Politik. Er beeinflusst die öffentliche Meinung und das politische Klima.</p>
+                                        </div>
+                                        
+                                        <div class="callout-questions-section">
+                                            <p><strong>Fragen:</strong></p>
+                                            <ol class="callout-questions-preview">
+                                                <li>
+                                                    <div class="question-item">
+                                                        <span class="question-text">Welche Veränderungen in der politischen Debatte hast du wahrgenommen?</span>
+                                                        <span class="answer-type">(Freitext)</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="question-item">
+                                                        <span class="question-text">Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?</span>
+                                                        <span class="answer-type">(Mehrfachauswahl)</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="question-item">
+                                                        <span class="question-text">Wie sollten Medien mit rechten populistischen Aussagen umgehen?</span>
+                                                        <span class="answer-type">(Freitext)</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="question-item">
+                                                        <span class="question-text">Wie hat sich dein Umgang mit politischen Diskussionen verändert?</span>
+                                                        <span class="answer-type">(Skala 1-10)</span>
+                                                    </div>
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    
+                                    <p>Möchtest du diesen Callout in Beabee anlegen?</p>
+                                </div>
+                                <div class="message-time">10:31</div>
+                            </div>
+                            
+                            <!-- User confirmation -->
+                            <div class="message user-message">
+                                <div class="message-content">
+                                    Ja, bitte anlegen.
+                                </div>
+                                <div class="message-time">10:32</div>
+                            </div>
+                            
+                            <!-- AI confirmation -->
+                            <div class="message ai-message">
+                                <div class="message-content">
+                                    <p>✅ Der Callout wurde erfolgreich in Beabee angelegt und ist jetzt für die Community verfügbar.</p>
+                                    <p>Du kannst die Antworten jederzeit über das @Callout-Tag in unseren Chats analysieren.</p>
+                                </div>
+                                <div class="message-time">10:32</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat input area -->
+                        <div class="chat-input-container">
+                            <div class="chat-toolbar">
+                                <button class="toolbar-button">
+                                    <i>@</i>Callout
+                                </button>
+                                <button class="toolbar-button">
+                                    <i>@</i>Frage
+                                </button>
+                            </div>
+                            <div class="chat-input-wrapper">
+                                <textarea class="chat-input" placeholder="Schreibe eine Nachricht..." id="chat-input-0"></textarea>
+                                <button class="send-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Second slide: AI analysis -->
