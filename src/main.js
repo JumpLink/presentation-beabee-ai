@@ -6,7 +6,7 @@ import 'reveal.js/dist/theme/night.css';
 const deck = new Reveal({
   // Configuration options
   hash: true,
-  transition: 'slide',
+  transition: 'fade',
   center: false,
   // Disable mouseWheel navigation
   mouseWheel: false,
