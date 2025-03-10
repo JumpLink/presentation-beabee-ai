@@ -56,7 +56,7 @@ export class ImageGenerationSlide extends HTMLElement {
             <p>${translations.preview.intro}</p>
             
             <div class="image-preview">
-                <!-- Image would be dynamically inserted here -->
+                <img src="${image}" alt="AI-generiertes Bild" />
                 <p class="image-description">${translations.preview.description}</p>
             </div>
             

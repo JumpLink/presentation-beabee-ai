@@ -560,17 +560,24 @@ chat-message .message-content .tag {
 .image-preview {
     margin: var(--spacing-md) 0;
     text-align: center;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .image-preview img {
     max-width: 100%;
+    height: auto;
     border-radius: var(--border-radius-md);
     margin-bottom: var(--spacing-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: inline-block;
 }
 
 .image-description {
     font-style: italic;
     color: var(--color-text-muted);
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
 }
 
 /***************************************
@@ -768,6 +775,23 @@ chat-message {
     font-size: calc(var(--font-size-lg) * 1.2);
     text-align: left;
     font-weight: 600;
+}
+
+/* Spezifische Stile für Bilder in AI-Nachrichten */
+.ai-message .message-content .image-preview {
+    margin: var(--spacing-md) 0;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.ai-message .message-content .image-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: inline-block;
 }
 
 /***************************************
