@@ -73,6 +73,14 @@ export class ChatFrame extends HTMLElement {
         return messageElement;
     }
     
+    // Clear all messages
+    clearMessages() {
+        const messagesContainer = this.querySelector('.chat-messages');
+        if (messagesContainer) {
+            messagesContainer.innerHTML = '';
+        }
+    }
+    
     // Hide messages (for initial state)
     hideMessages() {
         const messagesContainer = this.querySelector('.chat-messages');
