@@ -127,7 +127,39 @@ export const translations = {
         errorMessage: '❌ An error occurred.',
         toolbar: {
             callout: 'Callout',
-            question: 'Question'
+            question: 'Question',
+            callouts: [
+                {
+                    text: 'How does right-wing populism influence political debate in Germany?',
+                    shortTitle: 'Populism in debate'
+                },
+                {
+                    text: 'Climate change and personal responsibility',
+                    shortTitle: 'Climate responsibility'
+                },
+                {
+                    text: 'Digitalization in healthcare',
+                    shortTitle: 'Digital healthcare'
+                }
+            ],
+            questions: [
+                {
+                    text: 'What changes have you noticed in political debate?',
+                    shortTitle: 'Debate changes'
+                },
+                {
+                    text: 'What role do social media play in spreading right-wing populist narratives?',
+                    shortTitle: 'Social media role'
+                },
+                {
+                    text: 'How should media handle right-wing populist statements?',
+                    shortTitle: 'Media handling'
+                },
+                {
+                    text: 'How has your approach to political discussions changed?',
+                    shortTitle: 'Discussion changes'
+                }
+            ]
         },
         ui: {
             exampleResponsesTitle: 'Example Responses',

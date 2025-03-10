@@ -5,6 +5,7 @@ import { languageManager } from './i18n/LanguageManager.js';
 import './components/ChatFrame.js';
 import './components/ChatInput.js';
 import './components/ChatMessage.js';
+import './components/Toolbar.js';
 import './slides/CalloutCreationSlide.js';
 import './slides/ExampleResponsesSlide.js';
 import './slides/AIAnalysisSlide.js';
@@ -75,18 +76,6 @@ document.addEventListener('wheel', function(event) {
 }, true);
 
 deck.initialize();
-
-// Close dropdowns when clicking elsewhere
-function closeDropdownsOnOutsideClick(event) {
-  // Wenn das Klick-Target kein Toolbar-Button ist und nicht innerhalb eines Dropdowns liegt
-  if (!event.target.closest('.toolbar-button') && 
-      !event.target.closest('.dropdown')) {
-    // Alle aktiven Dropdowns schließen
-    document.querySelectorAll('.dropdown.active').forEach(dropdown => {
-      dropdown.classList.remove('active');
-    });
-  }
-}
 
 // Function to highlight @ tags in text
 function highlightTags(text) {
@@ -202,88 +191,9 @@ function insertTextAtCursor(input, text, chatInput) {
   }
 }
 
-// Initialize toolbar dropdowns
-function initToolbarDropdowns() {
-  console.log('Initializing toolbar dropdowns');
-
-  // Get all toolbar buttons
-  document.querySelectorAll('.toolbar-button').forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Find the dropdown that follows this button
-      const dropdown = button.nextElementSibling;
-      if (dropdown && dropdown.classList.contains('dropdown')) {
-        // Toggle active class
-        dropdown.classList.toggle('active');
-        
-        // Close all other dropdowns
-        document.querySelectorAll('.dropdown.active').forEach(openDropdown => {
-          if (openDropdown !== dropdown) {
-            openDropdown.classList.remove('active');
-          }
-        });
-      }
-    });
-  });
-  
-  // Add click events to dropdown items
-  document.querySelectorAll('.dropdown-content button').forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const promptText = button.getAttribute('data-prompt');
-      if (promptText) {
-        // Get the tag type
-        const tagType = button.closest('.dropdown').previousElementSibling.getAttribute('data-tag-type');
-        
-        // Format the text with appropriate tag - direkt als HTML
-        let formattedPrompt;
-        if (tagType) {
-          // Den Tag im Span verpacken und den Rest als normalen Text
-          const tagText = `@${tagType}: ${promptText}`;
-          formattedPrompt = `<span class="tag">${tagText}</span> `;
-        } else {
-          formattedPrompt = promptText;
-        }
-        
-        // Find the closest chat-input
-        const chatContainer = button.closest('.chat-container');
-        if (chatContainer) {
-          const chatInput = chatContainer.querySelector('chat-input');
-          if (chatInput) {
-            // Insert the text at cursor position
-            const inputElement = chatInput.querySelector('.chat-input');
-            if (inputElement) {
-              // Focus the input first to make sure the cursor position is set
-              inputElement.focus();
-              
-              // Insert the HTML direkt an der Cursor-Position
-              document.execCommand('insertHTML', false, formattedPrompt);
-              
-              // Stellen wir sicher, dass die Höhe angepasst wird
-              if (chatInput.adjustInputHeight) {
-                chatInput.adjustInputHeight(inputElement);
-              }
-            }
-          }
-        }
-        
-        // Close the dropdown
-        button.closest('.dropdown').classList.remove('active');
-      }
-    });
-  });
-}
-
 // Initialize event listeners
 function initEventListeners() {
   console.log('Initializing event listeners');
-  
-  // Close dropdowns when clicking elsewhere
-  document.addEventListener('click', closeDropdownsOnOutsideClick);
 }
 
 // Make global functions available to the window object
@@ -298,12 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initial language setup
   initializeLanguageSelector();
-  
-  // Wait for custom elements to be defined and rendered
-  setTimeout(() => {
-    console.log('Initializing toolbar dropdowns after delay');
-    initToolbarDropdowns();
-  }, 500); // Give components time to render
 });
 
 // Initialize language selector

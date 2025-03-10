@@ -31,35 +31,13 @@ export class ImageGenerationSlide extends HTMLElement {
         
         const commonTranslations = {
             confirmationMessage: languageManager.translate('common.confirmationMessage'),
-            placeholder: languageManager.translate('common.placeholder'),
-            toolbar: {
-                callout: languageManager.translate('common.toolbar.callout'),
-                question: languageManager.translate('common.toolbar.question')
-            }
+            placeholder: languageManager.translate('common.placeholder')
         };
         
         this.innerHTML = `
             <div class="chat-container">
                 <chat-frame title="${translations.title}">
                 </chat-frame>
-                
-                <div class="toolbar">
-                    <button class="toolbar-button" data-tag-type="Callout">
-                        <i>@</i>${commonTranslations.toolbar.callout}
-                    </button>
-                    <div class="dropdown dropdown-content">
-                        <button data-prompt="Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?">Populismus in der Debatte</button>
-                        <button data-prompt="Welche Maßnahmen könnten den Klimawandel verlangsamen?">Klimawandel Maßnahmen</button>
-                    </div>
-                    
-                    <button class="toolbar-button" data-tag-type="Frage">
-                        <i>@</i>${commonTranslations.toolbar.question}
-                    </button>
-                    <div class="dropdown dropdown-content">
-                        <button data-prompt="Welche Veränderungen in der politischen Debatte hast du wahrgenommen?">Debattenveränderungen</button>
-                        <button data-prompt="Wie hat sich dein Umgang mit politischen Diskussionen verändert?">Diskussionsveränderungen</button>
-                    </div>
-                </div>
                 
                 <chat-input 
                     id="chat-input-3"

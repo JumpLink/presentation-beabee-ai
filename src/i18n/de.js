@@ -127,7 +127,39 @@ export const translations = {
         errorMessage: '❌ Ein Fehler ist aufgetreten.',
         toolbar: {
             callout: 'Callout',
-            question: 'Frage'
+            question: 'Frage',
+            callouts: [
+                {
+                    text: 'Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?',
+                    shortTitle: 'Populismus in der Debatte'
+                },
+                {
+                    text: 'Klimawandel und persönliche Verantwortung',
+                    shortTitle: 'Klimawandel Verantwortung'
+                },
+                {
+                    text: 'Digitalisierung im Gesundheitswesen',
+                    shortTitle: 'Digitalisierung Gesundheit'
+                }
+            ],
+            questions: [
+                {
+                    text: 'Welche Veränderungen in der politischen Debatte hast du wahrgenommen?',
+                    shortTitle: 'Debattenveränderungen'
+                },
+                {
+                    text: 'Welche Rolle spielen soziale Medien für die Verbreitung rechter populistischer Narrative?',
+                    shortTitle: 'Rolle sozialer Medien'
+                },
+                {
+                    text: 'Wie sollten Medien mit rechten populistischen Aussagen umgehen?',
+                    shortTitle: 'Medienumgang'
+                },
+                {
+                    text: 'Wie hat sich dein Umgang mit politischen Diskussionen verändert?',
+                    shortTitle: 'Diskussionsveränderungen'
+                }
+            ]
         },
         ui: {
             exampleResponsesTitle: 'Beispiel-Antworten',

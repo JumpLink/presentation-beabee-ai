@@ -28,11 +28,6 @@ export class ChatFrame extends HTMLElement {
                 <div class="chat-container">
                     <div class="chat-messages">
                     </div>
-                    <div class="chat-input-container">
-                        <div class="chat-toolbar">
-                            <!-- Toolbar buttons will be added here -->
-                        </div>
-                    </div>
                 </div>
             </div>
         `;

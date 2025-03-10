@@ -1,4 +1,6 @@
 // ChatInput.js - Reusable chat input component
+import './Toolbar.js'; // Importiere die Toolbar-Komponente
+
 export class ChatInput extends HTMLElement {
     constructor() {
         super();
@@ -25,17 +27,20 @@ export class ChatInput extends HTMLElement {
 
     render() {
         this.innerHTML = `
-            <div class="chat-input-container">
-                <div class="chat-input" 
-                     contenteditable="true" 
-                     placeholder="${this.placeholder}" 
-                     id="${this.inputId}">
+            <div class="chat-input-wrapper">
+                <div class="chat-input-container">
+                    <div class="chat-input" 
+                         contenteditable="true" 
+                         placeholder="${this.placeholder}" 
+                         id="${this.inputId}">
+                    </div>
+                    <button class="send-button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                    </button>
                 </div>
-                <button class="send-button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                    </svg>
-                </button>
+                <chat-toolbar></chat-toolbar>
             </div>
         `;
     }
@@ -43,6 +48,7 @@ export class ChatInput extends HTMLElement {
     initializeEventListeners() {
         const input = this.querySelector(`#${this.inputId}`);
         const sendButton = this.querySelector('.send-button');
+        const toolbar = this.querySelector('chat-toolbar');
 
         // Handle input events
         input.addEventListener('input', () => {
@@ -63,6 +69,54 @@ export class ChatInput extends HTMLElement {
             sendButton.addEventListener('click', () => {
                 this.sendMessage();
             });
+        }
+        
+        // Handle tag insertion from toolbar
+        if (toolbar) {
+            toolbar.addEventListener('insert-tag', (e) => {
+                const { tagType, promptText } = e.detail;
+                this.insertTag(tagType, promptText);
+            });
+        }
+        
+        // Schließe Dropdowns beim Klicken außerhalb
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('chat-toolbar')) {
+                this.querySelectorAll('.dropdown.active').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    }
+
+    // Neue Methode zum Einfügen von Tags
+    insertTag(tagType, promptText) {
+        const input = this.querySelector(`#${this.inputId}`);
+        if (!input) return;
+        
+        // Formatiere den Text mit dem entsprechenden Tag
+        const tagText = `@${tagType}: ${promptText}`;
+        const formattedTag = `<span class="tag">${tagText}</span> `;
+        
+        // Fokussiere das Eingabefeld
+        input.focus();
+        
+        try {
+            // HTML direkt an der Cursor-Position einfügen
+            document.execCommand('insertHTML', false, formattedTag);
+            
+            // Input-Event auslösen, um Höhe anzupassen
+            const inputEvent = new Event('input', {
+                bubbles: true,
+                cancelable: true,
+            });
+            input.dispatchEvent(inputEvent);
+        } catch (e) {
+            console.error('Fehler beim Einfügen des Tags:', e);
+            
+            // Fallback: Tag am Ende anfügen
+            input.innerHTML += formattedTag;
+            this.adjustInputHeight(input);
         }
     }
 

@@ -42,24 +42,6 @@ export class ExampleResponsesSlide extends HTMLElement {
                 <chat-frame title="${translations.title}">
                 </chat-frame>
                 
-                <div class="toolbar">
-                    <button class="toolbar-button" data-tag-type="Callout">
-                        <i>@</i>${commonTranslations.toolbar.callout}
-                    </button>
-                    <div class="dropdown dropdown-content">
-                        <button data-prompt="Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?">Populismus in der Debatte</button>
-                        <button data-prompt="Welche Maßnahmen könnten den Klimawandel verlangsamen?">Klimawandel Maßnahmen</button>
-                    </div>
-                    
-                    <button class="toolbar-button" data-tag-type="Frage">
-                        <i>@</i>${commonTranslations.toolbar.question}
-                    </button>
-                    <div class="dropdown dropdown-content">
-                        <button data-prompt="Welche Veränderungen in der politischen Debatte hast du wahrgenommen?">Debattenveränderungen</button>
-                        <button data-prompt="Wie hat sich dein Umgang mit politischen Diskussionen verändert?">Diskussionsveränderungen</button>
-                    </div>
-                </div>
-                
                 <chat-input 
                     id="chat-input-example"
                     placeholder="${commonTranslations.placeholder}"
@@ -67,7 +49,7 @@ export class ExampleResponsesSlide extends HTMLElement {
                 </chat-input>
             </div>
         `;
-        
+
         // Speichere die Nachrichten für die Konversationssimulation
         
         // Erste AI-Antwort
@@ -89,10 +71,10 @@ export class ExampleResponsesSlide extends HTMLElement {
             
             <p>${translations.confirmText}</p>
         `;
-        
+
         // Zweite Benutzernachricht (Bestätigung)
         this.userResponse = `${translations.userConfirmation}`;
-        
+
         // Finale AI-Antwort
         this.finalResponse = `
             <p>${commonTranslations.confirmationMessage}</p>
@@ -165,4 +147,5 @@ export class ExampleResponsesSlide extends HTMLElement {
     }
 }
 
+// Komponente registrieren
 customElements.define('example-responses-slide', ExampleResponsesSlide);

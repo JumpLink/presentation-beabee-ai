@@ -187,9 +187,9 @@ html, body {
 .toolbar {
     display: flex;
     gap: 10px;
-    padding: 12px 16px;
+    padding: 5px 16px;
     background-color: rgba(30, 33, 41, 0.5);
-    border-bottom: 1px solid var(--color-border-light);
+    border-top: 1px solid var(--color-border-light);
     position: relative;
     z-index: 20;
     flex-wrap: wrap;
@@ -277,7 +277,28 @@ html, body {
     text-decoration: underline;
 }
 
-/* Chat input container styling */
+/* Chat-Input-Komponente Layout */
+.chat-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+}
+
+/* Toolbar innerhalb des Chat-Input */
+.chat-input-wrapper .toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 5px 16px;
+    background-color: rgba(30, 33, 41, 0.5);
+    border-top: 1px solid var(--color-border-light);
+    position: relative;
+    z-index: 20;
+    flex-wrap: wrap;
+    order: 2; /* Toolbar erscheint nach dem Input */
+}
+
+/* Chat input container styling - jetzt oberhalb der Toolbar */
 .chat-input-container {
     display: flex;
     flex-direction: row;
@@ -287,6 +308,7 @@ html, body {
     padding: 12px 16px;
     background-color: var(--color-user-message, #2a2e38);
     flex-shrink: 0;
+    order: 1; /* Input erscheint vor der Toolbar */
 }
 
 /* Chat input styling */
@@ -331,8 +353,8 @@ html, body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Dropdown styling */
-.dropdown {
+/* Dropdown-Menü nach oben öffnen */
+.toolbar .dropdown {
     position: absolute;
     background-color: var(--color-background-dark);
     border: 1px solid var(--color-border-light);
@@ -341,7 +363,7 @@ html, body {
     padding: 6px;
     z-index: 100;
     display: none;
-    top: calc(100% + 5px);
+    bottom: calc(100% + 5px); /* Öffnet nach oben */
     left: 0;
     min-width: 200px;
 }
@@ -710,7 +732,7 @@ chat-frame .chat-container {
     padding: 6px;
     z-index: 100;
     display: none;
-    top: calc(100% + 5px);
+    bottom: calc(100% + 5px);
     left: 0;
     min-width: 200px;
 }
@@ -1042,4 +1064,76 @@ image-generation-slide {
     margin: 0 0 var(--spacing-md) 0;
     font-size: var(--font-size-lg);
     text-align: left;
+}
+
+/* Toolbar im Chat-Input Wrapper */
+.chat-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Chat-Toolbar-Komponente */
+chat-toolbar {
+  display: block;
+  width: 100%;
+}
+
+chat-toolbar .toolbar-container {
+  display: flex;
+  gap: 10px;
+  padding: 5px 16px;
+  background-color: rgba(30, 33, 41, 0.5);
+  border-top: 1px solid var(--color-border-light);
+  position: relative;
+  z-index: 20;
+  flex-wrap: wrap;
+}
+
+/* Dropdown innerhalb der Toolbar */
+chat-toolbar .dropdown {
+  position: absolute;
+  background-color: var(--color-background-dark);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 6px;
+  z-index: 100;
+  display: none;
+  bottom: calc(100% + 5px); /* Nach oben öffnen */
+  left: 0;
+  min-width: 200px;
+}
+
+chat-toolbar .dropdown.active {
+  display: flex;
+  flex-direction: column;
+}
+
+chat-toolbar .dropdown-content button {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  text-align: left;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+}
+
+chat-toolbar .dropdown-content button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Chat-Input-Wrapper */
+.chat-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
