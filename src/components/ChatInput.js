@@ -1,11 +1,12 @@
 // ChatInput.js - Reusable chat input component
 import './Toolbar.js'; // Importiere die Toolbar-Komponente
+import { languageManager } from '../i18n/LanguageManager.js';
 
 export class ChatInput extends HTMLElement {
     constructor() {
         super();
         this.inputId = this.getAttribute('id') || 'chat-input';
-        this.placeholder = this.getAttribute('placeholder') || 'Write a message...';
+        this.placeholderKey = this.getAttribute('placeholder') || 'common.placeholder';
         this.initialMessage = this.getAttribute('initial-message') || '';
         this.initialMessageSent = false;
     }
@@ -23,24 +24,52 @@ export class ChatInput extends HTMLElement {
                 this.highlightTags(inputElement);
             }
         }
+        
+        // Auf Sprachänderungen reagieren
+        window.addEventListener('languageChanged', () => {
+            // Nur den Placeholder aktualisieren, ohne den gesamten Inhalt neu zu rendern
+            this.updatePlaceholder();
+        });
+    }
+    
+    // Methode zum Aktualisieren des Placeholders
+    updatePlaceholder() {
+        const inputElement = this.querySelector(`#${this.inputId}`);
+        if (inputElement) {
+            // Wenn der Placeholder ein Übersetzungsschlüssel ist, übersetzen
+            if (this.placeholderKey.includes('.')) {
+                inputElement.setAttribute('data-placeholder', languageManager.translate(this.placeholderKey));
+            } else {
+                // Andernfalls den Wert direkt verwenden
+                inputElement.setAttribute('data-placeholder', this.placeholderKey);
+            }
+        }
     }
 
     render() {
+        // Placeholder übersetzen, wenn es ein Übersetzungsschlüssel ist
+        let placeholder = this.placeholderKey;
+        if (this.placeholderKey.includes('.')) {
+            placeholder = languageManager.translate(this.placeholderKey);
+        }
+        
         this.innerHTML = `
             <div class="chat-input-wrapper">
-                <div class="chat-input-container">
-                    <div class="chat-input" 
-                         contenteditable="true" 
-                         placeholder="${this.placeholder}" 
-                         id="${this.inputId}">
+                <chat-toolbar></chat-toolbar>
+                <div class="input-container">
+                    <div 
+                        id="${this.inputId}" 
+                        class="chat-input" 
+                        contenteditable="true" 
+                        data-placeholder="${placeholder}">
                     </div>
                     <button class="send-button">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
                     </button>
                 </div>
-                <chat-toolbar></chat-toolbar>
             </div>
         `;
     }

@@ -86,10 +86,28 @@ export class TranslationSlide extends HTMLElement {
     initializeEventListeners() {
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
+            // Speichere den aktuellen Zustand
+            const currentStep = this.conversationStep;
+            const wasInitialMessageShown = this.initialMessageShown;
+            const wasSecondMessageShown = this.secondMessageShown;
+            
+            // Render mit neuen Übersetzungen
             this.render();
-            this.initialMessageShown = false;
-            this.secondMessageShown = false;
-            this.conversationStep = 0;
+            
+            // Stelle den Zustand wieder her
+            this.conversationStep = currentStep;
+            this.initialMessageShown = wasInitialMessageShown;
+            this.secondMessageShown = wasSecondMessageShown;
+            
+            // Wenn wir bereits im Schritt 1 sind und die zweite Nachricht noch nicht gesendet wurde,
+            // aktualisiere die Eingabe mit der übersetzten Bestätigungsnachricht
+            if (this.conversationStep === 1 && !this.secondMessageShown) {
+                const chatInput = this.querySelector('chat-input');
+                if (chatInput) {
+                    chatInput.setInputValue(this.userResponse);
+                    chatInput.focusInput();
+                }
+            }
         });
 
         // Listen for message sent events

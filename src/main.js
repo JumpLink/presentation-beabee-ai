@@ -6,6 +6,7 @@ import './components/ChatFrame.js';
 import './components/ChatInput.js';
 import './components/ChatMessage.js';
 import './components/Toolbar.js';
+import './components/LanguageSelector.js';
 import './slides/CalloutCreationSlide.js';
 import './slides/ExampleResponsesSlide.js';
 import './slides/AIAnalysisSlide.js';
@@ -205,36 +206,4 @@ window.adjustInputHeight = adjustInputHeight;
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM content loaded');
   initEventListeners();
-  
-  // Initial language setup
-  initializeLanguageSelector();
-});
-
-// Initialize language selector
-function initializeLanguageSelector() {
-  const languageButtons = document.querySelectorAll('.language-selector button');
-  
-  // Add click handlers to language buttons
-  languageButtons.forEach(button => {
-    const lang = button.getAttribute('data-lang');
-    
-    button.addEventListener('click', () => {
-      // Set active language
-      languageManager.setLanguage(lang);
-      
-      // Update active button status
-      languageButtons.forEach(btn => {
-        if (btn.getAttribute('data-lang') === lang) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-    });
-    
-    // Set initial active state
-    if (button.getAttribute('data-lang') === languageManager.getCurrentLanguage()) {
-      button.classList.add('active');
-    }
-  });
-} 
+}); 
