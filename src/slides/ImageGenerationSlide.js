@@ -4,6 +4,9 @@ import { languageManager } from '../i18n/LanguageManager.js';
 export class ImageGenerationSlide extends HTMLElement {
     constructor() {
         super();
+        this.initialMessageShown = false;
+        this.secondMessageShown = false; // Track if second message was shown
+        this.conversationStep = 0; // Track the current step in the conversation
     }
 
     connectedCallback() {
@@ -36,48 +39,58 @@ export class ImageGenerationSlide extends HTMLElement {
         };
         
         this.innerHTML = `
-            <chat-frame title="${translations.title}">
-                <div slot="messages">
-                    <chat-message type="user" time="10:50">
-                        ${translations.userMessage}
-                    </chat-message>
-                    
-                    <chat-message type="ai" time="10:51">
-                        <h5>${translations.preview.title}</h5>
-                        <p>${translations.preview.intro}</p>
-                        
-                        <div class="image-preview">
-                            <!-- Image would be dynamically inserted here -->
-                            <p class="image-description">${translations.preview.description}</p>
-                        </div>
-                        
-                        <p>${translations.preview.confirmText}</p>
-                    </chat-message>
-                    
-                    <chat-message type="user" time="10:52">
-                        ${translations.preview.userConfirmation}
-                    </chat-message>
-                    
-                    <chat-message type="ai" time="10:52">
-                        <p>${commonTranslations.confirmationMessage}</p>
-                        <p>${translations.preview.successText}</p>
-                    </chat-message>
-                </div>
+            <div class="chat-container">
+                <chat-frame title="${translations.title}">
+                </chat-frame>
                 
-                <div slot="toolbar">
-                    <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-3')">
+                <div class="toolbar">
+                    <button class="toolbar-button" data-tag-type="Callout">
                         <i>@</i>${commonTranslations.toolbar.callout}
                     </button>
-                    <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-3')">
+                    <div class="dropdown dropdown-content">
+                        <button data-prompt="Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?">Populismus in der Debatte</button>
+                        <button data-prompt="Welche Maßnahmen könnten den Klimawandel verlangsamen?">Klimawandel Maßnahmen</button>
+                    </div>
+                    
+                    <button class="toolbar-button" data-tag-type="Frage">
                         <i>@</i>${commonTranslations.toolbar.question}
                     </button>
+                    <div class="dropdown dropdown-content">
+                        <button data-prompt="Welche Veränderungen in der politischen Debatte hast du wahrgenommen?">Debattenveränderungen</button>
+                        <button data-prompt="Wie hat sich dein Umgang mit politischen Diskussionen verändert?">Diskussionsveränderungen</button>
+                    </div>
                 </div>
                 
-                <chat-input slot="input" 
-                           placeholder="${commonTranslations.placeholder}"
-                           input-id="chat-input-3">
+                <chat-input 
+                    id="chat-input-3"
+                    placeholder="${commonTranslations.placeholder}"
+                    initial-message="${translations.userMessage}">
                 </chat-input>
-            </chat-frame>
+            </div>
+        `;
+        
+        // Speichere die Nachrichten für die Konversationssimulation
+        
+        // Erste AI-Antwort
+        this.aiResponse = `
+            <h5>${translations.preview.title}</h5>
+            <p>${translations.preview.intro}</p>
+            
+            <div class="image-preview">
+                <!-- Image would be dynamically inserted here -->
+                <p class="image-description">${translations.preview.description}</p>
+            </div>
+            
+            <p>${translations.preview.confirmText}</p>
+        `;
+        
+        // Zweite Benutzernachricht (Bestätigung)
+        this.userResponse = `${translations.preview.userConfirmation}`;
+        
+        // Finale AI-Antwort
+        this.finalResponse = `
+            <p>${commonTranslations.confirmationMessage}</p>
+            <p>${translations.preview.successText}</p>
         `;
     }
 
@@ -85,33 +98,65 @@ export class ImageGenerationSlide extends HTMLElement {
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
             this.render();
+            this.initialMessageShown = false;
+            this.secondMessageShown = false;
+            this.conversationStep = 0;
         });
 
         // Listen for message sent events
         const chatInput = this.querySelector('chat-input');
-        if (chatInput) {
-            chatInput.addEventListener('messageSent', (e) => {
-                window.showConversation('chat-input-3');
-            });
-        }
-
-        // Listen for control button clicks
         const chatFrame = this.querySelector('chat-frame');
-        if (chatFrame) {
-            chatFrame.addEventListener('controlClick', (e) => {
-                const action = e.detail.action;
-                switch (action) {
-                    case 'minimize':
-                        // Handle minimize
+        
+        if (chatInput && chatFrame) {
+            chatInput.addEventListener('message-sent', (e) => {
+                // Konversationsschritte
+                switch (this.conversationStep) {
+                    case 0: // Erste Benutzernachricht wurde gesendet
+                        // Erste Benutzernachricht hinzufügen
+                        if (!this.initialMessageShown) {
+                            this.initialMessageShown = true;
+                            chatFrame.addMessage('user', e.detail.message);
+                        }
+                        
+                        // Erste AI-Antwort mit Verzögerung hinzufügen
+                        setTimeout(() => {
+                            chatFrame.addMessage('ai', this.aiResponse);
+                            
+                            // Zweite Benutzernachricht in das Eingabefeld eintragen
+                            setTimeout(() => {
+                                chatInput.setInputValue(this.userResponse);
+                                chatInput.focusInput();
+                                
+                                // Zum nächsten Schritt übergehen
+                                this.conversationStep = 1;
+                            }, 300);
+                        }, 800);
                         break;
-                    case 'maximize':
-                        // Handle maximize
+                        
+                    case 1: // Zweite Benutzernachricht wurde gesendet
+                        // Zweite Benutzernachricht hinzufügen, nur wenn sie noch nicht angezeigt wurde
+                        if (!this.secondMessageShown) {
+                            this.secondMessageShown = true;
+                            chatFrame.addMessage('user', e.detail.message);
+                            
+                            // Finale AI-Antwort mit Verzögerung hinzufügen
+                            setTimeout(() => {
+                                chatFrame.addMessage('ai', this.finalResponse);
+                                
+                                // Eingabefeld leeren und zum nächsten Schritt übergehen
+                                chatInput.setInputValue('');
+                                this.conversationStep = 2;
+                            }, 800);
+                        }
                         break;
-                    case 'close':
-                        // Handle close
+                        
+                    default: // Weitere Nachrichten werden einfach hinzugefügt
+                        chatFrame.addMessage('user', e.detail.message);
                         break;
                 }
             });
         }
     }
 }
+
+customElements.define('image-generation-slide', ImageGenerationSlide);

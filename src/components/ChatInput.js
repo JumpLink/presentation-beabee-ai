@@ -2,102 +2,36 @@
 export class ChatInput extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.inputId = this.getAttribute('id') || 'chat-input';
+        this.placeholder = this.getAttribute('placeholder') || 'Write a message...';
+        this.initialMessage = this.getAttribute('initial-message') || '';
+        this.initialMessageSent = false;
     }
 
     connectedCallback() {
         this.render();
         this.initializeEventListeners();
+        
+        // Apply initial message if provided
+        if (this.initialMessage) {
+            const inputElement = this.querySelector(`#${this.inputId}`);
+            if (inputElement) {
+                inputElement.innerText = this.initialMessage;
+                this.adjustInputHeight(inputElement);
+                this.highlightTags(inputElement);
+            }
+        }
     }
 
     render() {
-        const placeholder = this.getAttribute('placeholder') || 'Write a message...';
-        const inputId = this.getAttribute('input-id') || 'chat-input';
-
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    width: 100%;
-                }
-                
-                .chat-input-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    width: 100%;
-                }
-                
-                .chat-input {
-                    background-color: var(--color-chat-input-bg, #2a2e38);
-                    border: 1px solid var(--color-border-light, #3a3f4b);
-                    border-radius: 24px;
-                    padding: 12px 18px;
-                    color: var(--color-text, #e1e3e6);
-                    font-size: 16px;
-                    outline: none;
-                    min-height: 60px;
-                    max-height: none;
-                    height: auto;
-                    overflow-y: auto;
-                    font-family: inherit;
-                    line-height: 1.4;
-                    transition: height 0.2s ease;
-                    width: 100%;
-                    box-sizing: border-box;
-                    flex: 1;
-                }
-                
-                .chat-input[contenteditable="true"] {
-                    cursor: text;
-                    white-space: pre-wrap;
-                    word-break: break-word;
-                    overflow: visible;
-                }
-                
-                .chat-input[contenteditable="true"]:empty:before {
-                    content: attr(data-placeholder);
-                    color: var(--color-text-placeholder, #6c7280);
-                    pointer-events: none;
-                }
-                
-                .tag {
-                    color: var(--color-primary, #56b6c2);
-                    font-weight: bold;
-                }
-                
-                .send-button {
-                    background-color: var(--color-primary, #56b6c2);
-                    color: var(--color-background-dark, #1e2129);
-                    border: none;
-                    border-radius: 50%;
-                    width: 62px;
-                    height: 62px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: background-color 0.2s ease;
-                    flex-shrink: 0;
-                }
-                
-                .send-button:hover {
-                    background-color: var(--color-primary-hover, #67c7d3);
-                }
-                
-                .send-button svg {
-                    width: 30px;
-                    height: 30px;
-                }
-            </style>
-            
-            <div class="chat-input-container" part="chat-input-container">
+        this.innerHTML = `
+            <div class="chat-input-container">
                 <div class="chat-input" 
                      contenteditable="true" 
-                     data-placeholder="${placeholder}" 
-                     part="chat-input">
+                     placeholder="${this.placeholder}" 
+                     id="${this.inputId}">
                 </div>
-                <button class="send-button" part="send-button">
+                <button class="send-button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="30" height="30">
                         <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                     </svg>
@@ -107,8 +41,8 @@ export class ChatInput extends HTMLElement {
     }
 
     initializeEventListeners() {
-        const input = this.shadowRoot.querySelector('.chat-input');
-        const sendButton = this.shadowRoot.querySelector('.send-button');
+        const input = this.querySelector(`#${this.inputId}`);
+        const sendButton = this.querySelector('.send-button');
 
         // Handle input events
         input.addEventListener('input', () => {
@@ -125,9 +59,11 @@ export class ChatInput extends HTMLElement {
         });
 
         // Handle send button click
-        sendButton.addEventListener('click', () => {
-            this.sendMessage();
-        });
+        if (sendButton) {
+            sendButton.addEventListener('click', () => {
+                this.sendMessage();
+            });
+        }
     }
 
     adjustInputHeight(inputElement) {
@@ -144,45 +80,92 @@ export class ChatInput extends HTMLElement {
     }
 
     highlightTags(inputElement) {
-        const text = inputElement.textContent;
-        if (!text) return;
-
-        const highlightedText = text
-            .replace(/@Callout:/g, '<span class="tag">@Callout:</span>')
-            .replace(/@Frage:/g, '<span class="tag">@Frage:</span>');
-
-        if (highlightedText !== text) {
+        // Diese Methode ist jetzt hauptsächlich für manuell eingegebene Tags,
+        // da Tags aus den Dropdown-Buttons bereits formatiert sind
+        const html = inputElement.innerHTML;
+        
+        // Wenn keine Tags vorhanden sind, nichts tun
+        if (!html || html.indexOf('@') === -1) return;
+        
+        // Nach unformatierten @Tags suchen (nicht innerhalb von spans)
+        // Dies ist nur für manuell eingegebene Tags relevant
+        const newHtml = html.replace(/(?<!<span[^>]*>)(@\w+:[^?!.]*[?!.])/g, '<span class="tag">$1</span>');
+        
+        // Nur aktualisieren, wenn sich etwas geändert hat
+        if (newHtml !== html) {
+            // Speichere Cursor-Position
             const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
-            const startOffset = range.startOffset;
-
-            inputElement.innerHTML = highlightedText;
-
-            if (inputElement.childNodes.length > 0) {
-                try {
-                    const newRange = document.createRange();
-                    const textNode = inputElement.childNodes[0];
-                    newRange.setStart(textNode, Math.min(startOffset, textNode.length));
-                    newRange.setEnd(textNode, Math.min(startOffset, textNode.length));
-                    selection.removeAllRanges();
-                    selection.addRange(newRange);
-                } catch (e) {
-                    console.error('Error restoring cursor position:', e);
-                }
+            let range = null;
+            
+            if (selection && selection.rangeCount > 0) {
+                range = selection.getRangeAt(0).cloneRange();
+            }
+            
+            // Update HTML
+            inputElement.innerHTML = newHtml;
+            
+            // Cursor-Position wiederherstellen
+            if (range) {
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
         }
     }
 
     sendMessage() {
-        const input = this.shadowRoot.querySelector('.chat-input');
+        const input = this.querySelector(`#${this.inputId}`);
         const message = input.textContent.trim();
 
         if (message) {
-            this.dispatchEvent(new CustomEvent('messageSent', {
-                detail: { message }
-            }));
-            input.textContent = '';
-            this.adjustInputHeight(input);
+            // Wenn die Nachricht nicht leer ist und nicht gleich der initialen Nachricht
+            // oder die initiale Nachricht bereits gesendet wurde, sende die Nachricht
+            if (message !== this.initialMessage || this.initialMessageSent) {
+                this.dispatchEvent(new CustomEvent('message-sent', {
+                    bubbles: true,
+                    detail: { message }
+                }));
+                input.textContent = '';
+                this.adjustInputHeight(input);
+            } else {
+                // Markiere die initiale Nachricht als gesendet, um Duplikate zu vermeiden
+                this.initialMessageSent = true;
+                this.dispatchEvent(new CustomEvent('message-sent', {
+                    bubbles: true,
+                    detail: { message, isInitialMessage: true }
+                }));
+                input.textContent = '';
+                this.adjustInputHeight(input);
+            }
+        }
+    }
+
+    // Methode zum Setzen des Eingabewerts
+    setInputValue(text) {
+        const inputElement = this.querySelector(`#${this.inputId}`);
+        if (inputElement) {
+            inputElement.innerText = text;
+            this.adjustInputHeight(inputElement);
+            this.highlightTags(inputElement);
+        }
+    }
+
+    // Methode zum Setzen des Fokus auf das Eingabefeld
+    focusInput() {
+        const inputElement = this.querySelector(`#${this.inputId}`);
+        if (inputElement) {
+            inputElement.focus();
+            
+            // Cursor ans Ende des Textes setzen
+            if (document.createRange && window.getSelection) {
+                const range = document.createRange();
+                range.selectNodeContents(inputElement);
+                range.collapse(false); // false = collapse to end
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
         }
     }
 }
+
+customElements.define('chat-input', ChatInput);

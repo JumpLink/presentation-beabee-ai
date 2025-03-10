@@ -4,6 +4,9 @@ import { languageManager } from '../i18n/LanguageManager.js';
 export class AIAnalysisSlide extends HTMLElement {
     constructor() {
         super();
+        this.initialMessageShown = false;
+        this.secondMessageShown = false; // Track if second message was shown (not used in this slide)
+        this.conversationStep = 0; // Track the current step in the conversation
     }
 
     connectedCallback() {
@@ -29,58 +32,66 @@ export class AIAnalysisSlide extends HTMLElement {
         };
         
         this.innerHTML = `
-            <chat-frame title="${translations.title}">
-                <div slot="messages">
-                    <chat-message type="user" time="10:42">
-                        ${translations.userMessage}
-                    </chat-message>
-                    
-                    <chat-message type="ai" time="10:43">
-                        <h5>${translations.analysis.title}</h5>
-                        
-                        <p>${translations.analysis.intro}</p>
-                        
-                        <div class="analysis-summary">
-                            <div class="category negative">
-                                <h6>${translations.analysis.categories.negative.title}</h6>
-                                <ul>
-                                    ${translations.analysis.categories.negative.items.map(item => `<li>${item}</li>`).join('')}
-                                </ul>
-                            </div>
-                            
-                            <div class="category neutral">
-                                <h6>${translations.analysis.categories.neutral.title}</h6>
-                                <ul>
-                                    ${translations.analysis.categories.neutral.items.map(item => `<li>${item}</li>`).join('')}
-                                </ul>
-                            </div>
-                            
-                            <div class="category positive">
-                                <h6>${translations.analysis.categories.positive.title}</h6>
-                                <ul>
-                                    ${translations.analysis.categories.positive.items.map(item => `<li>${item}</li>`).join('')}
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <p class="conclusion">${translations.analysis.conclusion}</p>
-                    </chat-message>
-                </div>
+            <div class="chat-container">
+                <chat-frame title="${translations.title}">
+                </chat-frame>
                 
-                <div slot="toolbar">
-                    <button class="toolbar-button toolbar-button-callout" onclick="toggleToolbarDropdown(event, 'toolbar-callout-dropdown-chat-input-1')">
+                <div class="toolbar">
+                    <button class="toolbar-button" data-tag-type="Callout">
                         <i>@</i>${commonTranslations.toolbar.callout}
                     </button>
-                    <button class="toolbar-button toolbar-button-frage" onclick="toggleToolbarDropdown(event, 'toolbar-frage-dropdown-chat-input-1')">
+                    <div class="dropdown dropdown-content">
+                        <button data-prompt="Wie beeinflusst rechter Populismus die politische Debatte in Deutschland?">Populismus in der Debatte</button>
+                        <button data-prompt="Welche Maßnahmen könnten den Klimawandel verlangsamen?">Klimawandel Maßnahmen</button>
+                    </div>
+                    
+                    <button class="toolbar-button" data-tag-type="Frage">
                         <i>@</i>${commonTranslations.toolbar.question}
                     </button>
+                    <div class="dropdown dropdown-content">
+                        <button data-prompt="Welche Veränderungen in der politischen Debatte hast du wahrgenommen?">Debattenveränderungen</button>
+                        <button data-prompt="Wie hat sich dein Umgang mit politischen Diskussionen verändert?">Diskussionsveränderungen</button>
+                    </div>
                 </div>
                 
-                <chat-input slot="input" 
-                           placeholder="${commonTranslations.placeholder}"
-                           input-id="chat-input-1">
+                <chat-input 
+                    id="chat-input-1"
+                    placeholder="${commonTranslations.placeholder}"
+                    initial-message="${translations.userMessage}">
                 </chat-input>
-            </chat-frame>
+            </div>
+        `;
+        
+        // Vorbereiten der Antwort für den Chat
+        this.aiResponse = `
+            <h5>${translations.analysis.title}</h5>
+            
+            <p>${translations.analysis.intro}</p>
+            
+            <div class="analysis-summary">
+                <div class="category negative">
+                    <h6>${translations.analysis.categories.negative.title}</h6>
+                    <ul>
+                        ${translations.analysis.categories.negative.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="category neutral">
+                    <h6>${translations.analysis.categories.neutral.title}</h6>
+                    <ul>
+                        ${translations.analysis.categories.neutral.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="category positive">
+                    <h6>${translations.analysis.categories.positive.title}</h6>
+                    <ul>
+                        ${translations.analysis.categories.positive.items.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+            
+            <p class="conclusion">${translations.analysis.conclusion}</p>
         `;
     }
 
@@ -88,33 +99,45 @@ export class AIAnalysisSlide extends HTMLElement {
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
             this.render();
+            this.initialMessageShown = false;
+            this.secondMessageShown = false;
+            this.conversationStep = 0;
         });
 
         // Listen for message sent events
         const chatInput = this.querySelector('chat-input');
-        if (chatInput) {
-            chatInput.addEventListener('messageSent', (e) => {
-                window.showConversation('chat-input-1');
-            });
-        }
-
-        // Listen for control button clicks
         const chatFrame = this.querySelector('chat-frame');
-        if (chatFrame) {
-            chatFrame.addEventListener('controlClick', (e) => {
-                const action = e.detail.action;
-                switch (action) {
-                    case 'minimize':
-                        // Handle minimize
+        
+        if (chatInput && chatFrame) {
+            chatInput.addEventListener('message-sent', (e) => {
+                // Konversationsschritte
+                switch (this.conversationStep) {
+                    case 0: // Erste Benutzernachricht wurde gesendet
+                        // Erste Benutzernachricht hinzufügen
+                        if (!this.initialMessageShown) {
+                            this.initialMessageShown = true;
+                            chatFrame.addMessage('user', e.detail.message);
+                        }
+                        
+                        // AI-Antwort mit Verzögerung hinzufügen
+                        setTimeout(() => {
+                            chatFrame.addMessage('ai', this.aiResponse);
+                            
+                            // Gehe zum nächsten Schritt über und leere das Eingabefeld
+                            setTimeout(() => {
+                                chatInput.setInputValue('');
+                                this.conversationStep = 1;
+                            }, 300);
+                        }, 800);
                         break;
-                    case 'maximize':
-                        // Handle maximize
-                        break;
-                    case 'close':
-                        // Handle close
+                        
+                    default: // Weitere Nachrichten werden einfach hinzugefügt
+                        chatFrame.addMessage('user', e.detail.message);
                         break;
                 }
             });
         }
     }
 }
+
+customElements.define('ai-analysis-slide', AIAnalysisSlide);
