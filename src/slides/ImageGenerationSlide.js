@@ -1,5 +1,6 @@
 // ImageGenerationSlide.js - Component for the image generation slide
 import { languageManager } from '../i18n/LanguageManager.js';
+import image from '../assets/ai-generated-image-example.png';
 
 export class ImageGenerationSlide extends HTMLElement {
     constructor() {
